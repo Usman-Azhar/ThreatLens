@@ -1,0 +1,2 @@
+-- SQL Tables File
+-- all 8 CREATE TABLE statements
