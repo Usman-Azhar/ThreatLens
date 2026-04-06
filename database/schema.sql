@@ -50,7 +50,7 @@ CREATE TABLE sessions (
     login_time    TIMESTAMP    DEFAULT NOW(),
     last_active   TIMESTAMP    DEFAULT NOW(),
     logout_time   TIMESTAMP,
-    sta_tus       VARCHAR(50)  DEFAULT 'Active' CHECK (status IN ('Active', 'Expired', 'Terminated', 'Suspicious')),
+    sta_tus       VARCHAR(50)  DEFAULT 'Active' CHECK (sta_tus IN ('Active', 'Expired', 'Terminated', 'Suspicious')),
     is_flagged    BOOLEAN      DEFAULT FALSE
 );
 
@@ -73,7 +73,7 @@ CREATE TABLE alerts (
     event_id    INT          NOT NULL REFERENCES events(event_id),
     alert_type  VARCHAR(100) NOT NULL,
     severity    VARCHAR(50)  CHECK (severity IN ('Low', 'Medium', 'High', 'Critical')),
-    sta_tus      VARCHAR(50)  CHECK (status IN ('Open', 'Investigating', 'Resolved')),
+    sta_tus      VARCHAR(50)  CHECK (sta_tus IN ('Open', 'Investigating', 'Resolved')),
     created_at  TIMESTAMP    DEFAULT NOW()
 );
 
