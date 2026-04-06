@@ -1,6 +1,16 @@
 -- SQL Tables File
 -- all 8 CREATE TABLE statements 
 
+-- Abdullah
+Drop table if exists Organizations;
+
+Create table Organizations (
+org_id Serial Primary Key,
+org_name varchar(255),
+created_at Timestamp
+);
+
+
 -- Fatima
 CREATE TABLE roles (
     role_id    SERIAL PRIMARY KEY,
@@ -17,6 +27,16 @@ CREATE TABLE users (
     email         VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     created_at    TIMESTAMP    DEFAULT NOW()
+);
+
+-- Abdullah
+Drop table if exists Assets;
+
+Create table Assets (
+asset_id Serial Primary Key,
+org_id Int references Organizations (org_id),
+asset_name Varchar(255),
+asset_type varchar(100)
 );
 
 -- Fatima
@@ -55,4 +75,14 @@ CREATE TABLE alerts (
     severity    VARCHAR(50)  CHECK (severity IN ('Low', 'Medium', 'High', 'Critical')),
     sta_tus      VARCHAR(50)  CHECK (status IN ('Open', 'Investigating', 'Resolved')),
     created_at  TIMESTAMP    DEFAULT NOW()
+);
+
+-- Abdullah
+Drop table if exists Threat_Intelligence;
+
+Create table Threat_Intelligence (
+threat_id Serial Primary Key,
+threat_type Varchar(100),
+value Varchar(255),
+last_updated Timestamp
 );
