@@ -2,7 +2,7 @@
 -- all 8 CREATE TABLE statements 
 
 -- Abdullah
-Drop table if exists Organizations;
+Drop table if exists Organizations cascade;
 
 Create table Organizations (
 org_id Serial Primary Key,
@@ -12,6 +12,9 @@ created_at Timestamp
 
 
 -- Fatima
+Drop table if exists roles cascade;
+
+
 CREATE TABLE roles (
     role_id    SERIAL PRIMARY KEY,
     role_name  VARCHAR(50)  NOT NULL,
@@ -19,6 +22,9 @@ CREATE TABLE roles (
 );
 
 -- Fatima
+Drop table if exists users cascade;
+
+
 CREATE TABLE users (
     user_id       SERIAL PRIMARY KEY,
     org_id        INT          NOT NULL REFERENCES Organizations(org_id),
@@ -30,7 +36,7 @@ CREATE TABLE users (
 );
 
 -- Abdullah
-Drop table if exists Assets;
+Drop table if exists Assets cascade;
 
 Create table Assets (
 asset_id Serial Primary Key,
@@ -40,6 +46,9 @@ asset_type varchar(100)
 );
 
 -- Fatima
+Drop table if exists sessions cascade;
+
+
 CREATE TABLE sessions (
     session_id    SERIAL PRIMARY KEY,
     user_id       INT          NOT NULL REFERENCES users(user_id),
@@ -55,6 +64,9 @@ CREATE TABLE sessions (
 );
 
 -- Usman 
+Drop table if exists events cascade;
+
+
 CREATE TABLE events (
     event_id    SERIAL PRIMARY KEY,
     user_id     INT          NOT NULL REFERENCES users(user_id),
@@ -68,6 +80,9 @@ CREATE TABLE events (
 );
 
 -- Usman
+Drop table if exists alerts cascade;
+
+
 CREATE TABLE alerts (
     alert_id    SERIAL PRIMARY KEY,
     event_id    INT          NOT NULL REFERENCES events(event_id),
@@ -78,7 +93,7 @@ CREATE TABLE alerts (
 );
 
 -- Abdullah
-Drop table if exists Threat_Intelligence;
+Drop table if exists Threat_Intelligence cascade;
 
 Create table Threat_Intelligence (
 threat_id Serial Primary Key,
