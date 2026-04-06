@@ -47,7 +47,7 @@ INSERT INTO threat_intelligence (threat_type, value, last_updated) VALUES
 ('known_attacker', '107.189.10.143', '2024-01-03');
 
 
-INSERT INTO sessions (user_id, org_id, session_token, ip_address, device_info, login_time, last_active, logout_time, status, is_flagged) VALUES
+INSERT INTO sessions (user_id, org_id, session_token, ip_address, device_info, login_time, last_active, logout_time, sta_tus, is_flagged) VALUES
 (1, 1, 'tok_ali_001', '103.12.45.100', 'Chrome on Windows 11', '2024-01-15 09:00:00', '2024-01-15 09:45:00', '2024-01-15 10:00:00', 'Expired', false),
 (3, 1, 'tok_hassan_001', '103.12.45.200', 'Firefox on Ubuntu', '2024-01-15 10:00:00', '2024-01-15 11:00:00', NULL, 'Active', false),
 (3, 1, 'tok_hassan_002', '45.33.32.156', 'Chrome on Android', '2024-01-15 10:05:00', '2024-01-15 10:30:00', NULL, 'Active', true),
@@ -56,7 +56,7 @@ INSERT INTO sessions (user_id, org_id, session_token, ip_address, device_info, l
 
 
 -- Normal successful logins
-INSERT INTO events (user_id, asset_id, session_id, timestamp, event_type, ip_address, success, metadata) VALUES
+INSERT INTO events (user_id, asset_id, session_id, times_tamp, event_type, ip_address, success, metadata) VALUES
 (1, 1, 1, '2024-01-15 09:00:00', 'login_success', '103.12.45.100', true,  'Normal login'),
 (2, 1, 2, '2024-01-15 10:00:00', 'login_success', '103.12.45.200', true,  'Normal login'),
 (6, 4, 4, '2024-01-15 08:00:00', 'login_success', '10.0.0.5',      true,  'Normal login'),
@@ -96,9 +96,24 @@ INSERT INTO events (user_id, asset_id, session_id, timestamp, event_type, ip_add
 (10, 4, 4, '2024-01-11 11:00:00', 'login_success', '10.0.0.10',     true, 'Normal');
 
 
-INSERT INTO alerts (event_id, alert_type, severity, status, created_at) VALUES
-(9,  'brute_force',       'High',     'Open',         '2024-01-16 14:10:01'),
-(10, 'suspicious_ip',     'Critical', 'Investigating', '2024-01-15 10:05:01'),
-(11, 'off_hours_login',   'Medium',   'Open',         '2024-01-17 03:15:01'),
-(13, 'privilege_escalation', 'High', 'Open',         '2024-01-15 11:00:01'),
-(14, 'privilege_escalation', 'High', 'Resolved',     '2024-01-16 09:00:01');
+INSERT INTO alerts (event_id, alert_type, severity, sta_tus, created_at) VALUES
+(
+    (SELECT event_id FROM events WHERE event_type = 'login_failed' LIMIT 1 OFFSET 5), 
+    'brute_force', 'High', 'Open', '2024-01-16 14:10:01'
+),
+(
+    (SELECT event_id FROM events WHERE metadata = 'Login from flagged IP' LIMIT 1), 
+    'suspicious_ip', 'Critical', 'Investigating', '2024-01-15 10:05:01'
+),
+(
+    (SELECT event_id FROM events WHERE metadata = 'Unusual hour login' LIMIT 1), 
+    'off_hours_login', 'Medium', 'Open', '2024-01-17 03:15:01'
+),
+(
+    (SELECT event_id FROM events WHERE metadata = 'Accessed admin panel' LIMIT 1), 
+    'privilege_escalation', 'High', 'Open', '2024-01-15 11:00:01'
+),
+(
+    (SELECT event_id FROM events WHERE metadata = 'Accessed admin panel' LIMIT 1 OFFSET 1), 
+    'privilege_escalation', 'High', 'Resolved', '2024-01-16 09:00:01'
+);
