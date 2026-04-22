@@ -1,1 +1,20 @@
-# main Flask application
+from flask import Flask
+from flask_cors import CORS
+
+from routes.events   import events_bp
+from routes.sessions import sessions_bp
+from routes.orgs     import orgs_bp
+
+app = Flask(__name__)
+CORS(app)
+
+app.register_blueprint(events_bp,   url_prefix="/api/events")
+app.register_blueprint(sessions_bp, url_prefix="/api/sessions")
+app.register_blueprint(orgs_bp,     url_prefix="/api/orgs")
+
+@app.route("/api/health")
+def health():
+    return {"status": "ok"}
+
+if __name__ == "__main__":
+    app.run(debug=True, port=5000)
