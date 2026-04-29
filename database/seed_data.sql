@@ -12,11 +12,11 @@ INSERT INTO roles (role_name, permissions) VALUES
 
 
 INSERT INTO users (org_id, role_id, username, email, password_hash, created_at) VALUES
-(1, 1, 'ali.admin', 'ali@alliedbank.pk', '$2b$12$hashed_admin_pass', '2024-01-10 09:00:00'),
-(1, 2, 'sara.analyst', 'sara@alliedbank.pk', '$2b$12$hashed_ana_pass', '2024-01-10 09:00:00'),
-(1, 3, 'hassan.view', 'hassan@alliedbank.pk', '$2b$12$hashed_view_pass', '2024-01-10 09:00:00'),
-(1, 2, 'nadia.analyst', 'nadia@alliedbank.pk', '$2b$12$hashed_nadia_pass', '2024-01-11 09:00:00'),
-(1, 3, 'tariq.view', 'tariq@alliedbank.pk', '$2b$12$hashed_tariq_pass', '2024-01-11 09:00:00'),
+(1, 1, 'ali.admin', 'ali@alliedbank.pk', '$2b$12$xxgpdxf7hBxP3BbBltuCzO0MI82cvMtx7jTJ2AkxhcYK6l7.kkwn2', '2024-01-10 09:00:00'),
+(1, 2, 'sara.analyst', 'sara@alliedbank.pk', '$2b$12$qJj7ohXgVMV1q0.MbG2pv.bqxoO7.fo2aDsXegM6V7B5dFTblvQVi', '2024-01-10 09:00:00'),
+(1, 3, 'hassan.view', 'hassan@alliedbank.pk', '$2b$12$hashed_view_pass$2b$12$SFMfF9h0TASgJPs45.fIx.qJWZKvkr8ni1AEf4Gz2Mb1jY8EyZDwK', '2024-01-10 09:00:00'),
+(1, 2, 'nadia.analyst', 'nadia@alliedbank.pk', '$2b$12$AHwUEGtPx8JmriRazkRpl.v7q.E5Ql9OzPVzn3E759fCtD5GV99lC', '2024-01-11 09:00:00'),
+(1, 3, 'tariq.view', 'tariq@alliedbank.pk', '$2b$12$AkGz.a9FyV/cb/.PGP7i7.//009nxMipa6Xtdwc7rRJ6MIXZUHJJm', '2024-01-11 09:00:00'),
 -- GIKI University users (org_id=2)
 (2, 1, 'usman.admin', 'usman@giki.edu.pk', '$2b$12$hashed_u_admin', '2024-01-12 09:00:00'),
 (2, 2, 'fatima.analyst', 'fatima@giki.edu.pk', '$2b$12$hashed_f_ana', '2024-01-12 09:00:00'),
