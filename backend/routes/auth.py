@@ -8,7 +8,7 @@ from datetime import datetime
 import secrets
 import bcrypt
 from flask import Blueprint, request, render_template, make_response, redirect
-from ..db import query
+from db import query
 
 auth_bp = Blueprint("auth", __name__)
 
