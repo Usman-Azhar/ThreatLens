@@ -9,9 +9,6 @@ DB_CONFIG = {
     "port":     "5432"
 }
 
-def get_connection():
-    return psycopg2.connect(**DB_CONFIG)
-
 def query(sql, params=None):
     conn = get_connection()
     try:
@@ -19,6 +16,10 @@ def query(sql, params=None):
             cur.execute(sql, params)
             if sql.strip().upper().startswith("SELECT"):
                 return cur.fetchall()
+            if "RETURNING" in sql.upper():
+                result = cur.fetchall()
+                conn.commit()
+                return result
             conn.commit()
             return []
     finally:
