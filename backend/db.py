@@ -9,6 +9,9 @@ DB_CONFIG = {
     "port":     "5432"
 }
 
+def get_connection():
+    return psycopg2.connect(**DB_CONFIG)
+
 def query(sql, params=None):
     conn = get_connection()
     try:
@@ -24,6 +27,3 @@ def query(sql, params=None):
             return []
     finally:
         conn.close()
-        
-def get_connection():
-    return psycopg2.connect(**DB_CONFIG)
