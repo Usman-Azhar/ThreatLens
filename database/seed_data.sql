@@ -18,11 +18,11 @@ INSERT INTO users (org_id, role_id, username, email, password_hash, created_at) 
 (1, 2, 'nadia.analyst', 'nadia@alliedbank.pk', '$2b$12$AHwUEGtPx8JmriRazkRpl.v7q.E5Ql9OzPVzn3E759fCtD5GV99lC', '2024-01-11 09:00:00'),
 (1, 3, 'tariq.view', 'tariq@alliedbank.pk', '$2b$12$AkGz.a9FyV/cb/.PGP7i7.//009nxMipa6Xtdwc7rRJ6MIXZUHJJm', '2024-01-11 09:00:00'),
 -- GIKI University users (org_id=2)
-(2, 1, 'usman.admin', 'usman@giki.edu.pk', '$2b$12$hashed_u_admin', '2024-01-12 09:00:00'),
-(2, 2, 'fatima.analyst', 'fatima@giki.edu.pk', '$2b$12$hashed_f_ana', '2024-01-12 09:00:00'),
-(2, 3, 'abdullahg.view', 'abdullah@giki.edu.pk', '$2b$12$hashed_a_view', '2024-01-12 09:00:00'),
-(2, 2, 'bilal.analyst', 'bilal@giki.edu.pk', '$2b$12$hashed_b_ana', '2024-01-13 09:00:00'),
-(2, 3, 'zara.view', 'zara@giki.edu.pk', '$2b$12$hashed_z_view', '2024-01-13 09:00:00');
+(2, 1, 'usman.admin', 'usman@giki.edu.pk', '$2b$12$x35wHtdJbbNWr6RUAkt..OcchiOH50XXEKzS3QvJFjCXOrdiuHamu', '2024-01-12 09:00:00'),
+(2, 2, 'fatima.analyst', 'fatima@giki.edu.pk', '$$2b$12$ZCTL6hqeoYqPP4hlS2KL5OGA/ZtAloOMsIhHZgWsjy8JeSg8roWV2', '2024-01-12 09:00:00'),
+(2, 3, 'abdullahg.view', 'abdullah@giki.edu.pk', '$2b$12$K8NhsHWZsOueRHPYUfEF1OcdLlrOTB2tY/w6tTYLkrARMetrtKjqi', '2024-01-12 09:00:00'),
+(2, 2, 'bilal.analyst', 'bilal@giki.edu.pk', '$2b$12$Zutot6LaY25elC5MNiSqJutn.yh1V.TFXMEPEzK3DqB4Nzr8ZlUuq', '2024-01-13 09:00:00'),
+(2, 3, 'zara.view', 'zara@giki.edu.pk', '$2b$12$SHSjmWQnTQl0.RdLq2qoLewVyok7QujVAN1wFN.glsoX1GBamiMRy', '2024-01-13 09:00:00');
 
 
 INSERT INTO assets (org_id, asset_name, asset_type) VALUES
