@@ -24,3 +24,6 @@ def query(sql, params=None):
             return []
     finally:
         conn.close()
+        
+def get_connection():
+    return psycopg2.connect(**DB_CONFIG)

@@ -5,6 +5,8 @@ from routes.events   import events_bp
 from routes.sessions import sessions_bp
 from routes.orgs     import orgs_bp
 from routes.auth import auth_bp
+from routes.pages import pages_bp
+app.register_blueprint(pages_bp)
 
 app = Flask(__name__, template_folder="templates")
 CORS(app)
