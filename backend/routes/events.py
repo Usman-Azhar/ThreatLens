@@ -3,6 +3,7 @@ from db import query
 
 events_bp = Blueprint("events", __name__)
 
+
 # GET /api/events?org_id=1
 @events_bp.route("/", methods=["GET"])
 def get_events():
@@ -55,7 +56,7 @@ def get_alerts():
     return jsonify([dict(r) for r in rows])
 
 
-# PATCH /api/events/alerts/<id> — update alert status
+# PATCH /api/events/alerts/<id>
 @events_bp.route("/alerts/<int:alert_id>", methods=["PATCH"])
 def update_alert(alert_id):
     data = request.get_json()
@@ -99,8 +100,37 @@ def get_stats():
     """, param)
 
     return jsonify({
-        "events_per_day":    [dict(r) for r in events_per_day],
-        "severity_breakdown":[dict(r) for r in severity_breakdown],
-        "alert_types":       [dict(r) for r in alert_types]
+        "events_per_day":     [dict(r) for r in events_per_day],
+        "severity_breakdown": [dict(r) for r in severity_breakdown],
+        "alert_types":        [dict(r) for r in alert_types],
     })
-    
+
+
+# ── TASK 3: POST /api/events/log ─────────────────────────────────────────────
+# Called from JavaScript whenever a user navigates to a page or downloads a file.
+# Also triggers privilege_escalation check for page_access events.
+@events_bp.route("/log", methods=["POST"])
+def log_event():
+    data       = request.get_json()
+    user_id    = data.get("user_id")
+    asset_id   = data.get("asset_id")
+    session_id = data.get("session_id")
+    event_type = data.get("event_type")   # e.g. 'page_access', 'file_download'
+    role_id    = data.get("role_id")
+    ip         = request.remote_addr
+
+    row = query(
+        """INSERT INTO events
+               (user_id, asset_id, session_id, event_type, ip_address, success, times_tamp)
+           VALUES (%s, %s, %s, %s, %s, TRUE, NOW())
+           RETURNING event_id""",
+        (user_id, asset_id, session_id, event_type, ip),
+    )
+    event_id = row[0]["event_id"]
+
+    # Privilege escalation check only on page access
+    if event_type == "page_access" and role_id is not None:
+        from routes.threat_check import check_privilege_escalation
+        check_privilege_escalation(user_id, asset_id, event_id, role_id)
+
+    return jsonify({"status": "logged", "event_id": event_id})

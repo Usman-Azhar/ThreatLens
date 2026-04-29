@@ -3,6 +3,7 @@ from db import query
 
 sessions_bp = Blueprint("sessions", __name__)
 
+
 # GET /api/sessions?org_id=1
 @sessions_bp.route("/", methods=["GET"])
 def get_sessions():
@@ -50,3 +51,18 @@ def get_flagged():
             WHERE s.is_flagged = TRUE
         """)
     return jsonify([dict(r) for r in rows])
+
+
+# ── TASK 1: POST /api/sessions/heartbeat ─────────────────────────────────────
+# Updates last_active for the current session cookie every 2 minutes.
+# Called silently by the JS setInterval in sessions.html.
+@sessions_bp.route("/heartbeat", methods=["POST"])
+def heartbeat():
+    token = request.cookies.get("session_token")
+    if token:
+        query(
+            "UPDATE sessions SET last_active = NOW() "
+            "WHERE session_token = %s AND sta_tus = 'Active'",
+            (token,),
+        )
+    return jsonify({"status": "ok"})

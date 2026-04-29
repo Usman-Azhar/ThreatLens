@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ThreatLens — Sessions</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg:       #040d14;
+    --bg2:      #071520;
+    --panel:    #0a1e2e;
+    --border:   #0e3a52;
+    --accent:   #00c8ff;
+    --accent2:  #00ff9d;
+    --danger:   #ff3b5c;
+    --warn:     #ffb800;
+    --text:     #c8dde8;
+    --text-dim: #4a7a94;
+    --glow:     0 0 18px rgba(0,200,255,0.35);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;overflow-x:hidden;}
+  body::before{
+    content:'';position:fixed;inset:0;
+    background-image:
+      linear-gradient(rgba(0,200,255,0.03) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(0,200,255,0.03) 1px,transparent 1px);
+    background-size:40px 40px;pointer-events:none;z-index:0;
+  }
+  .scanline{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:999;
+    background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);}
+
+  /* NAV */
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;
+    background:rgba(4,13,20,0.92);backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border);
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 2rem;height:60px;}
+  .nav-logo{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1.4rem;
+    color:var(--accent);letter-spacing:3px;text-transform:uppercase;
+    display:flex;align-items:center;gap:10px;}
+  .nav-logo span{color:var(--accent2);}
+  .logo-dot{width:8px;height:8px;background:var(--accent2);border-radius:50%;
+    animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,255,157,0.4);}50%{box-shadow:0 0 0 6px rgba(0,255,157,0);}}
+  .nav-links{display:flex;gap:0.5rem;}
+  .nav-links a{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:0.85rem;
+    letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;
+    color:var(--text-dim);padding:6px 14px;border:1px solid transparent;border-radius:3px;transition:all 0.2s;}
+  .nav-links a:hover,.nav-links a.active{color:var(--accent);border-color:var(--border);
+    background:rgba(0,200,255,0.06);text-shadow:var(--glow);}
+  .nav-logout form button{
+    font-family:'Rajdhani',sans-serif;font-weight:600;font-size:0.85rem;
+    letter-spacing:1.5px;text-transform:uppercase;background:transparent;
+    border:1px solid var(--danger);color:var(--danger);
+    padding:6px 14px;border-radius:3px;cursor:pointer;transition:all 0.2s;}
+  .nav-logout form button:hover{background:rgba(255,59,92,0.1);}
+
+  /* MAIN LAYOUT */
+  .main{position:relative;z-index:1;padding:80px 2rem 2rem;max-width:1300px;margin:0 auto;}
+  .page-header{display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border);}
+  .page-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1.6rem;
+    letter-spacing:3px;text-transform:uppercase;color:var(--accent);}
+  .page-title span{color:var(--text-dim);font-size:0.8rem;font-family:'Share Tech Mono',monospace;
+    display:block;letter-spacing:1px;margin-top:2px;}
+  .refresh-badge{font-family:'Share Tech Mono',monospace;font-size:0.7rem;
+    color:var(--accent2);border:1px solid rgba(0,255,157,0.3);
+    padding:4px 12px;border-radius:2px;}
+
+  /* TABLE */
+  .table-wrap{background:var(--panel);border:1px solid var(--border);border-radius:6px;overflow:hidden;}
+  table{width:100%;border-collapse:collapse;}
+  thead th{background:var(--bg2);font-family:'Rajdhani',sans-serif;font-weight:700;
+    font-size:0.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);
+    padding:12px 16px;text-align:left;border-bottom:1px solid var(--border);}
+  tbody tr{border-bottom:1px solid rgba(14,58,82,0.5);transition:background 0.15s;}
+  tbody tr:hover{background:rgba(0,200,255,0.04);}
+  tbody td{padding:11px 16px;font-size:0.9rem;font-family:'Exo 2',sans-serif;color:var(--text);}
+  .mono{font-family:'Share Tech Mono',monospace;font-size:0.8rem;color:var(--text-dim);}
+
+  /* BADGES */
+  .badge{display:inline-block;padding:2px 10px;border-radius:2px;
+    font-family:'Rajdhani',sans-serif;font-weight:700;font-size:0.75rem;
+    letter-spacing:1px;text-transform:uppercase;}
+  .badge-critical{background:rgba(255,59,92,0.15);color:var(--danger);border:1px solid rgba(255,59,92,0.3);}
+  .badge-high{background:rgba(255,184,0,0.12);color:var(--warn);border:1px solid rgba(255,184,0,0.3);}
+  .badge-medium{background:rgba(0,200,255,0.1);color:var(--accent);border:1px solid rgba(0,200,255,0.3);}
+  .badge-low{background:rgba(0,255,157,0.08);color:var(--accent2);border:1px solid rgba(0,255,157,0.2);}
+  .badge-open{background:rgba(255,59,92,0.12);color:var(--danger);border:1px solid rgba(255,59,92,0.25);}
+  .badge-investigating{background:rgba(255,184,0,0.1);color:var(--warn);border:1px solid rgba(255,184,0,0.25);}
+  .badge-resolved{background:rgba(0,255,157,0.08);color:var(--accent2);border:1px solid rgba(0,255,157,0.2);}
+  .badge-active{background:rgba(0,255,157,0.08);color:var(--accent2);border:1px solid rgba(0,255,157,0.2);}
+  .badge-expired{background:rgba(74,122,148,0.1);color:var(--text-dim);border:1px solid rgba(74,122,148,0.2);}
+  .badge-suspicious{background:rgba(255,59,92,0.15);color:var(--danger);border:1px solid rgba(255,59,92,0.3);}
+  .badge-flagged{background:rgba(255,59,92,0.15);color:var(--danger);border:1px solid rgba(255,59,92,0.3);
+    animation:pulse 2s infinite;}
+  .badge-success{background:rgba(0,255,157,0.08);color:var(--accent2);border:1px solid rgba(0,255,157,0.2);}
+  .badge-fail{background:rgba(255,59,92,0.12);color:var(--danger);border:1px solid rgba(255,59,92,0.25);}
+
+  /* STATUS SELECT */
+  .status-select{background:var(--bg2);border:1px solid var(--border);color:var(--text);
+    padding:4px 8px;border-radius:3px;font-family:'Share Tech Mono',monospace;font-size:0.75rem;
+    cursor:pointer;outline:none;}
+  .status-select:focus{border-color:var(--accent);}
+
+  /* KPI STRIP */
+  .kpi-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem;}
+  .kpi{background:var(--panel);border:1px solid var(--border);border-radius:4px;
+    padding:1.1rem 1.4rem;position:relative;overflow:hidden;}
+  .kpi::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+  .kpi.kpi-blue::after{background:var(--accent);}
+  .kpi.kpi-green::after{background:var(--accent2);}
+  .kpi.kpi-red::after{background:var(--danger);}
+  .kpi.kpi-warn::after{background:var(--warn);}
+  .kpi .kpi-val{font-family:'Share Tech Mono',monospace;font-size:1.8rem;color:var(--accent);}
+  .kpi.kpi-green .kpi-val{color:var(--accent2);}
+  .kpi.kpi-red .kpi-val{color:var(--danger);}
+  .kpi.kpi-warn .kpi-val{color:var(--warn);}
+  .kpi .kpi-lbl{font-family:'Rajdhani',sans-serif;font-size:0.75rem;
+    letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-top:2px;}
+
+  /* EMPTY STATE */
+  .empty{text-align:center;padding:3rem;color:var(--text-dim);
+    font-family:'Share Tech Mono',monospace;font-size:0.85rem;}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+  .main{animation:fadeUp 0.4s ease both;}
+</style>
+</head>
+<body>
+<div class="scanline"></div>
+<nav>
+  <div class="nav-logo"><div class="logo-dot"></div>Threat<span>Lens</span></div>
+  <div class="nav-links">
+    <a href="/sessions" class="active">Sessions</a>
+    <a href="/events"   >Events</a>
+    <a href="/alerts"   >Alerts</a>
+    <a href="/stats"    >Stats</a>
+  </div>
+  <div class="nav-logout">
+    <form action="/auth/logout" method="POST">
+      <button type="submit">Logout</button>
+    </form>
+  </div>
+</nav>
+
+<div class="main">
+  <div class="page-header">
+    <div class="page-title">
+      // Active Sessions
+      <span>All user sessions — live view</span>
+    </div>
+    <div class="refresh-badge">AUTO-REFRESH 30s</div>
+  </div>
+
+  <!-- KPI strip -->
+  <div class="kpi-strip">
+    <div class="kpi kpi-blue">
+      <div class="kpi-val">{{ sessions | length }}</div>
+      <div class="kpi-lbl">Total Sessions</div>
+    </div>
+    <div class="kpi kpi-green">
+      <div class="kpi-val">{{ sessions | selectattr("sta_tus","equalto","Active") | list | length }}</div>
+      <div class="kpi-lbl">Active</div>
+    </div>
+    <div class="kpi kpi-red">
+      <div class="kpi-val">{{ sessions | selectattr("is_flagged") | list | length }}</div>
+      <div class="kpi-lbl">Flagged</div>
+    </div>
+    <div class="kpi kpi-warn">
+      <div class="kpi-val">{{ sessions | selectattr("sta_tus","equalto","Suspicious") | list | length }}</div>
+      <div class="kpi-lbl">Suspicious</div>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>User</th>
+          <th>IP Address</th>
+          <th>Device</th>
+          <th>Login Time</th>
+          <th>Last Active</th>
+          <th>Status</th>
+          <th>Flag</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in sessions %}
+        <tr>
+          <td class="mono">{{ s.session_id }}</td>
+          <td>{{ s.username }}</td>
+          <td class="mono">{{ s.ip_address }}</td>
+          <td class="mono" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ s.device_info }}">{{ s.device_info }}</td>
+          <td class="mono">{{ s.login_time }}</td>
+          <td class="mono">{{ s.last_active }}</td>
+          <td>
+            {% if s.sta_tus == "Active" %}
+              <span class="badge badge-active">Active</span>
+            {% elif s.sta_tus == "Suspicious" %}
+              <span class="badge badge-suspicious">Suspicious</span>
+            {% elif s.sta_tus == "Expired" %}
+              <span class="badge badge-expired">Expired</span>
+            {% else %}
+              <span class="badge badge-expired">{{ s.sta_tus }}</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if s.is_flagged %}
+              <span class="badge badge-flagged">⚠ Flagged</span>
+            {% else %}
+              <span style="color:var(--text-dim);font-size:0.8rem;">—</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="8"><div class="empty">// No sessions found</div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  // Auto-refresh every 30 seconds
+  setTimeout(function () { location.reload(); }, 30000);
+</script>
+<script>
+  // Heartbeat every 2 minutes to keep session alive
+  setInterval(function () {
+    fetch("/api/sessions/heartbeat", { method: "POST" });
+  }, 120000);
+</script>
+</body>
+</html>
