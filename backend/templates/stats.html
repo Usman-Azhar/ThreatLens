@@ -188,11 +188,19 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script id="stats-data" type="application/json">
+  {
+    "eventsPerDay": {{ events_per_day | tojson }},
+    "severityData": {{ severity_breakdown | tojson }},
+    "alertTypesData": {{ alert_types | tojson }}
+  }
+</script>
 <script>
   // Data injected by Flask
-  const eventsPerDay    = {{ events_per_day    | tojson }};
-  const severityData    = {{ severity_breakdown | tojson }};
-  const alertTypesData  = {{ alert_types        | tojson }};
+  const statsData = JSON.parse(document.getElementById('stats-data').textContent);
+  const eventsPerDay   = statsData.eventsPerDay;
+  const severityData   = statsData.severityData;
+  const alertTypesData = statsData.alertTypes;
 
   const gridColor   = "rgba(14,58,82,0.6)";
   const tickColor   = "#4a7a94";
