@@ -22,7 +22,6 @@
   *{margin:0;padding:0;box-sizing:border-box;}
   body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;overflow-x:hidden;}
 
-  /* animated grid background */
   body::before{
     content:'';position:fixed;inset:0;
     background-image:
@@ -32,7 +31,6 @@
     pointer-events:none;z-index:0;
   }
 
-  /* NAV */
   nav{
     position:fixed;top:0;left:0;right:0;z-index:100;
     background:rgba(4,13,20,0.92);backdrop-filter:blur(12px);
@@ -67,7 +65,6 @@
     padding:4px 12px;border:1px solid rgba(0,255,157,0.2);border-radius:3px;
   }
 
-  /* HERO */
   .hero{
     position:relative;z-index:1;
     min-height:100vh;display:flex;flex-direction:column;
@@ -93,7 +90,6 @@
     animation:fadeDown 0.6s 0.2s ease both;
   }
 
-  /* LOGIN CARD */
   .login-card{
     background:var(--panel);border:1px solid var(--border);
     border-radius:6px;padding:2.5rem;width:100%;max-width:420px;
@@ -132,33 +128,9 @@
   }
   .btn-login:hover{background:rgba(0,200,255,0.1);box-shadow:var(--glow);}
 
-  .login-error{
-    color:var(--danger);font-size:0.8rem;font-family:'Share Tech Mono',monospace;
-    text-align:center;margin-top:1rem;display:none;
-  }
-
-  /* STAT STRIP */
-  .stat-strip{
-    display:flex;gap:1rem;margin-top:3rem;flex-wrap:wrap;justify-content:center;
-    animation:fadeUp 0.6s 0.5s ease both;
-  }
-  .stat-item{
-    background:var(--panel);border:1px solid var(--border);
-    padding:1rem 1.5rem;border-radius:4px;text-align:center;min-width:120px;
-  }
-  .stat-item .val{
-    font-family:'Share Tech Mono',monospace;font-size:1.6rem;
-    color:var(--accent);display:block;
-  }
-  .stat-item .lbl{
-    font-size:0.7rem;letter-spacing:2px;color:var(--text-dim);
-    text-transform:uppercase;font-family:'Rajdhani',sans-serif;
-  }
-
   @keyframes fadeDown{from{opacity:0;transform:translateY(-20px);}to{opacity:1;transform:none;}}
   @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:none;}}
 
-  /* SCAN LINE effect */
   .scanline{
     position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:999;
     background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);
@@ -171,13 +143,13 @@
 <nav>
   <div class="nav-logo"><div class="logo-dot"></div>Threat<span>Lens</span></div>
   <div class="nav-links">
-    <a href="index.html" class="active">Home</a>
-    <a href="/stats">Stats</a>
+    <a href="/auth/login" class="active">Home</a>
+    <a href="/stats">Dashboard</a>
     <a href="/events">Events</a>
     <a href="/alerts">Alerts</a>
     <a href="/sessions">Sessions</a>
   </div>
-  <div class="nav-org" id="nav-org-display">NOT LOGGED IN</div>
+  <div class="nav-org">NOT LOGGED IN</div>
 </nav>
 
 <div class="hero">
@@ -202,13 +174,6 @@
     {% if error %}
     <p style="color:var(--danger); font-family:'Share Tech Mono',monospace; margin-top:1rem; text-align:center;">⚠ {{ error }}</p>
     {% endif %}
-  </div>
-
-  <div class="stat-strip" id="stat-strip">
-    <div class="stat-item"><span class="val" id="s-events">—</span><span class="lbl">Events</span></div>
-    <div class="stat-item"><span class="val" id="s-alerts">—</span><span class="lbl">Alerts</span></div>
-    <div class="stat-item"><span class="val" id="s-sessions">—</span><span class="lbl">Sessions</span></div>
-    <div class="stat-item"><span class="val" id="s-orgs">—</span><span class="lbl">Orgs</span></div>
   </div>
 </div>
 
