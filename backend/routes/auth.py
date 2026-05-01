@@ -35,11 +35,16 @@ def login():
 
     user = rows[0]
 
-    if not bcrypt.checkpw(password.encode(), user["password_hash"].encode()):
+    try:
+        password_valid = bcrypt.checkpw(password.encode(), user["password_hash"].encode())
+    except ValueError:
+        return render_template("login.html", error="Invalid credentials")
+
+    if not password_valid:
         query(
             """INSERT INTO events
                (event_type, user_id, ip_address, success, asset_id, session_id)
-               VALUES ('login_failed', %s, %s, false, 1, 1)""",
+               VALUES ('login_failed', %s, %s, false, 1, NULL)""",
             (user["user_id"], ip)
         )
         return render_template("login.html", error="Invalid credentials")
@@ -76,6 +81,7 @@ def login():
         redirect_url = "/alerts"
     else:
         redirect_url = "/welcome"
+
     resp = make_response(redirect(redirect_url))
     resp.set_cookie("session_token", token)
     return resp
