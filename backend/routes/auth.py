@@ -25,7 +25,6 @@ def login():
     ip = request.remote_addr
     device = request.headers.get("User-Agent", "Unknown")
 
-    # Task 3 — look up user
     rows = query(
         "SELECT * FROM users WHERE username = %s",
         (username,)
@@ -36,7 +35,6 @@ def login():
 
     user = rows[0]
 
-    # Task 4 — check password
     if not bcrypt.checkpw(password.encode(), user["password_hash"].encode()):
         query(
             """INSERT INTO events
@@ -44,10 +42,8 @@ def login():
                VALUES ('login_failed', %s, %s, false, 1, 1)""",
             (user["user_id"], ip)
         )
-
         return render_template("login.html", error="Invalid credentials")
 
-    # Task 5 — create session
     token = secrets.token_hex(32)
 
     session_rows = query(
@@ -60,7 +56,6 @@ def login():
 
     session_id = session_rows[0]["session_id"]
 
-    # Create login success event and get event_id
     event_rows = query(
         """INSERT INTO events
            (event_type, user_id, session_id, ip_address, success, asset_id)
@@ -71,17 +66,11 @@ def login():
 
     event_id = event_rows[0]["event_id"]
 
-    # Threat checks
     check_suspicious_ip(user["user_id"], ip, session_id, event_id)
     check_off_hours(user["user_id"], event_id, datetime.now())
     check_concurrent_session(user["user_id"], ip, event_id)
 
-    # Task 6 — set cookie and redirect based on role
-    if user["role_id"] == 1:
-        resp = make_response(redirect("/sessions"))
-    else:
-        resp = make_response(redirect(f"/welcome?username={username}"))
-
+    resp = make_response(redirect("/sessions" if user["role_id"] == 1 else "/welcome"))
     resp.set_cookie("session_token", token)
     return resp
 
@@ -102,9 +91,3 @@ def logout():
     resp = make_response(redirect("/auth/login"))
     resp.delete_cookie("session_token")
     return resp
-
-
-@auth_bp.route("/welcome")
-def welcome():
-    username = request.args.get("username", "User")
-    return render_template("welcome.html", username=username)

@@ -130,14 +130,13 @@
 </style>
 </head>
 <body>
-<div class="scanline"></div>
-<nav>
-  <div class="nav-logo"><div class="logo-dot"></div>Threat<span>Lens</span></div>
   <div class="nav-links">
-    <a href="/sessions" >Sessions</a>
-    <a href="/events"   class="active">Events</a>
-    <a href="/alerts"   >Alerts</a>
-    <a href="/stats"    >Stats</a>
+    {% if role_id == 1 %}
+    <a href="/sessions">Sessions</a>
+    {% endif %}
+    <a href="/events" class="active">Events</a>
+    <a href="/alerts">Alerts</a>
+    <a href="/stats">Stats</a>
   </div>
   <div class="nav-logout">
     <form action="/auth/logout" method="POST">

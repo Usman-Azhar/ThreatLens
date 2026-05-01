@@ -46,4 +46,15 @@ def check_privilege_escalation(user_id, asset_id, event_id, role_id):
                 "INSERT INTO alerts (event_id, alert_type, severity, sta_tus) VALUES (%s, 'privilege_escalation', 'High', 'Open')",
                 (event_id,)
             )
-        
+
+def check_unauthorized_access(user_id, session_id, event_id, route):
+    query(
+        """INSERT INTO alerts (event_id, alert_type, severity, sta_tus)
+           VALUES (%s, 'privilege_escalation', 'High', 'Open')""",
+        (event_id,)
+    )
+    query(
+        """UPDATE sessions SET is_flagged = TRUE
+           WHERE session_id = %s""",
+        (session_id,)
+    )

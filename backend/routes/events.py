@@ -61,7 +61,7 @@ def get_alerts():
 def update_alert(alert_id):
     data = request.get_json()
     new_status = data.get("sta_tus")
-    if new_status not in ("Open", "Investigating", "Resolved"):
+    if new_status not in ("Open", "Investigating", "Resolved", "False Positive"):
         return jsonify({"error": "Invalid status"}), 400
     query("UPDATE alerts SET sta_tus = %s WHERE alert_id = %s", (new_status, alert_id))
     return jsonify({"message": "Alert updated"})
@@ -106,16 +106,14 @@ def get_stats():
     })
 
 
-# ── TASK 3: POST /api/events/log ─────────────────────────────────────────────
-# Called from JavaScript whenever a user navigates to a page or downloads a file.
-# Also triggers privilege_escalation check for page_access events.
+# POST /api/events/log
 @events_bp.route("/log", methods=["POST"])
 def log_event():
     data       = request.get_json()
     user_id    = data.get("user_id")
     asset_id   = data.get("asset_id")
     session_id = data.get("session_id")
-    event_type = data.get("event_type")   # e.g. 'page_access', 'file_download'
+    event_type = data.get("event_type")
     role_id    = data.get("role_id")
     ip         = request.remote_addr
 
@@ -128,7 +126,6 @@ def log_event():
     )
     event_id = row[0]["event_id"]
 
-    # Privilege escalation check only on page access
     if event_type == "page_access" and role_id is not None:
         from routes.threat_check import check_privilege_escalation
         check_privilege_escalation(user_id, asset_id, event_id, role_id)

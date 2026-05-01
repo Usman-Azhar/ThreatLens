@@ -98,6 +98,7 @@
     animation:pulse 2s infinite;}
   .badge-success{background:rgba(0,255,157,0.08);color:var(--accent2);border:1px solid rgba(0,255,157,0.2);}
   .badge-fail{background:rgba(255,59,92,0.12);color:var(--danger);border:1px solid rgba(255,59,92,0.25);}
+  .badge-fp{background:rgba(74,122,148,0.1);color:var(--text-dim);border:1px solid rgba(74,122,148,0.3);}
 
   /* STATUS SELECT */
   .status-select{background:var(--bg2);border:1px solid var(--border);color:var(--text);
@@ -114,10 +115,12 @@
   .kpi.kpi-green::after{background:var(--accent2);}
   .kpi.kpi-red::after{background:var(--danger);}
   .kpi.kpi-warn::after{background:var(--warn);}
+  .kpi.kpi-dim::after{background:var(--text-dim);}
   .kpi .kpi-val{font-family:'Share Tech Mono',monospace;font-size:1.8rem;color:var(--accent);}
   .kpi.kpi-green .kpi-val{color:var(--accent2);}
   .kpi.kpi-red .kpi-val{color:var(--danger);}
   .kpi.kpi-warn .kpi-val{color:var(--warn);}
+  .kpi.kpi-dim .kpi-val{color:var(--text-dim);}
   .kpi .kpi-lbl{font-family:'Rajdhani',sans-serif;font-size:0.75rem;
     letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-top:2px;}
 
@@ -134,10 +137,12 @@
 <nav>
   <div class="nav-logo"><div class="logo-dot"></div>Threat<span>Lens</span></div>
   <div class="nav-links">
-    <a href="/sessions" >Sessions</a>
-    <a href="/events"   >Events</a>
-    <a href="/alerts"   class="active">Alerts</a>
-    <a href="/stats"    >Stats</a>
+    {% if role_id == 1 %}
+    <a href="/sessions">Sessions</a>
+    {% endif %}
+    <a href="/events">Events</a>
+    <a href="/alerts" class="active">Alerts</a>
+    <a href="/stats">Stats</a>
   </div>
   <div class="nav-logout">
     <form action="/auth/logout" method="POST">
@@ -172,6 +177,10 @@
     <div class="kpi kpi-green">
       <div class="kpi-val">{{ alerts | selectattr("sta_tus","equalto","Resolved") | list | length }}</div>
       <div class="kpi-lbl">Resolved</div>
+    </div>
+    <div class="kpi kpi-dim">
+      <div class="kpi-val">{{ alerts | selectattr("sta_tus","equalto","False Positive") | list | length }}</div>
+      <div class="kpi-lbl">False Positive</div>
     </div>
   </div>
 
@@ -210,11 +219,24 @@
           <td class="mono">{{ a.event_type }}</td>
           <td class="mono">{{ a.created_at }}</td>
           <td>
+            {% if role_id in (1, 2) %}
             <select class="status-select" onchange="updateAlert({{ a.alert_id }}, this.value)">
-              <option value="Open"          {% if a.sta_tus=="Open" %}selected{% endif %}>Open</option>
-              <option value="Investigating" {% if a.sta_tus=="Investigating" %}selected{% endif %}>Investigating</option>
-              <option value="Resolved"      {% if a.sta_tus=="Resolved" %}selected{% endif %}>Resolved</option>
+              <option value="Open"           {% if a.sta_tus=="Open" %}selected{% endif %}>Open</option>
+              <option value="Investigating"  {% if a.sta_tus=="Investigating" %}selected{% endif %}>Investigating</option>
+              <option value="Resolved"       {% if a.sta_tus=="Resolved" %}selected{% endif %}>Resolved</option>
+              <option value="False Positive" {% if a.sta_tus=="False Positive" %}selected{% endif %}>False Positive</option>
             </select>
+            {% else %}
+              {% if a.sta_tus == "Open" %}
+                <span class="badge badge-open">Open</span>
+              {% elif a.sta_tus == "Investigating" %}
+                <span class="badge badge-investigating">Investigating</span>
+              {% elif a.sta_tus == "Resolved" %}
+                <span class="badge badge-resolved">Resolved</span>
+              {% else %}
+                <span class="badge badge-fp">False Positive</span>
+              {% endif %}
+            {% endif %}
           </td>
         </tr>
         {% else %}

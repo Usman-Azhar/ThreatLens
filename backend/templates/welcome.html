@@ -1,205 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard — ThreatLens</title>
-  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;700&family=Space+Mono:wght@400;700&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet"/>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-      --primary: #00c8ff;
-      --danger: #ff3b5c;
-      --success: #00ff88;
-      --warning: #ffb800;
-      --bg-dark: #040d14;
-      --bg-darker: #020609;
-      --surface: #0a1929;
-      --surface-alt: #122a42;
-      --text-primary: #c8dde8;
-      --text-secondary: #4a7a94;
-      --border: #1e3a52;
-    }
-    body {
-      background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
-      color: var(--text-primary);
-      font-family: 'Exo 2', sans-serif;
-      line-height: 1.6;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-    body::before {
-      content: '';
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background-image:
-        linear-gradient(0deg, transparent 24%, rgba(0,200,255,0.05) 25%, rgba(0,200,255,0.05) 26%, transparent 27%, transparent 74%, rgba(0,200,255,0.05) 75%, rgba(0,200,255,0.05) 76%, transparent 77%, transparent),
-        linear-gradient(90deg, transparent 24%, rgba(0,200,255,0.05) 25%, rgba(0,200,255,0.05) 26%, transparent 27%, transparent 74%, rgba(0,200,255,0.05) 75%, rgba(0,200,255,0.05) 76%, transparent 77%, transparent);
-      background-size: 50px 50px;
-      pointer-events: none; z-index: 0;
-    }
-    .container { position: relative; z-index: 1; width: 100%; max-width: 1200px; margin: 0 auto; padding: 2rem; }
-    header {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 4rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border);
-    }
-    .logo {
-      display: flex; align-items: center; gap: 0.5rem;
-      font-family: 'Rajdhani', sans-serif; font-size: 1.8rem; font-weight: 700;
-      letter-spacing: 2px; color: var(--primary); text-decoration: none;
-    }
-    .logo::before { content: '◆'; color: var(--danger); }
-    .user-info { display: flex; align-items: center; gap: 1.5rem; }
-    .user-status { text-align: right; }
-    .user-status .name { color: var(--primary); font-weight: 600; font-size: 1.1rem; }
-    .user-status .role { color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.25rem; }
-    .user-avatar {
-      width: 48px; height: 48px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary), var(--danger));
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700; color: var(--bg-dark); font-size: 1.3rem;
-    }
-    .main { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-bottom: 3rem; }
-    .card {
-      background: rgba(10,25,41,0.8); border: 1px solid var(--border);
-      border-radius: 8px; padding: 2rem; backdrop-filter: blur(10px); transition: all 0.3s ease;
-    }
-    .card:hover { border-color: var(--primary); box-shadow: 0 0 20px rgba(0,200,255,0.1); }
-    .card-title {
-      font-family: 'Rajdhani', sans-serif; font-size: 1.3rem; color: var(--primary);
-      margin-bottom: 1.5rem; letter-spacing: 1px; display: flex; align-items: center; gap: 0.5rem;
-    }
-    .card-title::before { content: '▶'; font-size: 0.8rem; }
-    .welcome-card { grid-column: 1; background: linear-gradient(135deg, rgba(0,200,255,0.1) 0%, rgba(255,59,92,0.05) 100%); }
-    .welcome-text { margin-bottom: 1.5rem; }
-    .welcome-text h2 { font-family: 'Rajdhani', sans-serif; font-size: 2rem; color: var(--primary); margin-bottom: 0.5rem; letter-spacing: 1px; }
-    .welcome-text p { color: var(--text-secondary); font-size: 0.95rem; }
-    .status-badge {
-      display: inline-block; background: rgba(0,255,136,0.1); border: 1px solid var(--success);
-      color: var(--success); padding: 0.5rem 1rem; border-radius: 4px;
-      font-size: 0.85rem; font-weight: 600; margin-bottom: 1.5rem;
-    }
-    .stats-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 1rem; margin: 2rem 0; }
-    .stat {
-      background: rgba(0,200,255,0.05); border: 1px solid var(--border);
-      padding: 1rem; border-radius: 6px; text-align: center;
-    }
-    .stat-value { font-family: 'Rajdhani', sans-serif; font-size: 1.8rem; color: var(--primary); font-weight: 700; margin-bottom: 0.5rem; }
-    .stat-label { color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
-    .sidebar { display: flex; flex-direction: column; gap: 1.5rem; }
-    .quick-actions { background: rgba(10,25,41,0.8); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; backdrop-filter: blur(10px); }
-    .quick-actions h3 { font-family: 'Rajdhani', sans-serif; color: var(--primary); margin-bottom: 1rem; font-size: 1rem; letter-spacing: 1px; }
-    .action-btn {
-      display: block; width: 100%; padding: 0.75rem 1rem; margin-bottom: 0.5rem;
-      background: transparent; border: 1px solid var(--border); color: var(--text-primary);
-      text-align: left; border-radius: 4px; cursor: pointer;
-      font-family: 'Space Mono', monospace; font-size: 0.85rem;
-      transition: all 0.3s ease; text-decoration: none;
-    }
-    .action-btn:last-child { margin-bottom: 0; }
-    .action-btn:hover { background: rgba(0,200,255,0.1); border-color: var(--primary); color: var(--primary); }
-    .system-info { background: rgba(10,25,41,0.8); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; backdrop-filter: blur(10px); }
-    .info-item { display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid rgba(0,200,255,0.1); font-size: 0.9rem; }
-    .info-item:last-child { border-bottom: none; }
-    .info-label { color: var(--text-secondary); }
-    .info-value { color: var(--primary); font-family: 'Space Mono', monospace; }
-    footer { display: flex; justify-content: space-between; align-items: center; padding-top: 2rem; border-top: 1px solid var(--border); color: var(--text-secondary); font-size: 0.85rem; }
-    .btn-logout {
-      background: transparent; border: 1px solid var(--danger); color: var(--danger);
-      font-family: 'Rajdhani', sans-serif; font-weight: 700; letter-spacing: 1px;
-      text-transform: uppercase; padding: 0.75rem 1.5rem; border-radius: 4px;
-      cursor: pointer; font-size: 0.85rem; transition: all 0.3s ease;
-    }
-    .btn-logout:hover { background: rgba(255,59,92,0.1); box-shadow: 0 0 15px rgba(255,59,92,0.3); }
-    @media (max-width: 768px) {
-      .main { grid-template-columns: 1fr; }
-      .welcome-card { grid-column: 1; }
-      header { flex-direction: column; gap: 1rem; text-align: center; }
-      .user-status { text-align: center; }
-      .container { padding: 1rem; }
-      footer { flex-direction: column; gap: 1rem; }
-    }
-    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.7;} }
-    .pulse { animation: pulse 2s ease-in-out infinite; }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>{{ org_name }} — Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet"/>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    background:#040d14;
+    color:#c8dde8;
+    font-family:'Exo 2',sans-serif;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .card{
+    text-align:center;
+    padding:3rem 4rem;
+    border:1px solid #0e3a52;
+    border-radius:8px;
+    background:#0a1e2e;
+    max-width:480px;
+    width:100%;
+  }
+  .org{
+    font-family:'Rajdhani',sans-serif;
+    font-size:1.8rem;
+    font-weight:700;
+    color:#00c8ff;
+    letter-spacing:3px;
+    text-transform:uppercase;
+    margin-bottom:0.5rem;
+  }
+  .greeting{
+    font-size:1rem;
+    color:#4a7a94;
+    margin-bottom:2rem;
+  }
+  .greeting span{
+    color:#c8dde8;
+    font-weight:600;
+  }
+  .status{
+    font-size:0.85rem;
+    color:#00ff9d;
+    margin-bottom:2rem;
+    letter-spacing:1px;
+  }
+  .spinner{
+    width:32px;
+    height:32px;
+    border:3px solid #0e3a52;
+    border-top:3px solid #00c8ff;
+    border-radius:50%;
+    animation:spin 1s linear infinite;
+    margin:0 auto 1.5rem;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .redirect-msg{
+    font-size:0.78rem;
+    color:#4a7a94;
+    letter-spacing:1px;
+  }
+  .logout-link{
+    display:inline-block;
+    margin-top:2rem;
+    font-size:0.78rem;
+    color:#4a7a94;
+    text-decoration:none;
+    border-bottom:1px solid #0e3a52;
+    padding-bottom:2px;
+    cursor:pointer;
+    background:none;
+    border-top:none;
+    border-left:none;
+    border-right:none;
+    font-family:'Exo 2',sans-serif;
+  }
+  .logout-link:hover{color:#ff3b5c;}
+</style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="logo">THREATL3NS</div>
-      <div class="user-info">
-        <div class="user-status">
-          <div class="name">{{ username }}</div>
-          <div class="role">Security Analyst</div>
-        </div>
-        <div class="user-avatar">{{ username[0] | upper }}</div>
-      </div>
-    </header>
-
-    <div class="main">
-      <div class="card welcome-card">
-        <div class="welcome-text">
-          <div class="status-badge">● SYSTEM ONLINE</div>
-          <h2>Welcome Back, {{ username }}</h2>
-          <p>You are accessing the ThreatLens Security Intelligence Platform. All systems operational.</p>
-        </div>
-
-        <!-- Stats fetched live from the API -->
-        <div class="stats-grid" id="stats-grid">
-          <div class="stat"><div class="stat-value" id="stat-alerts">—</div><div class="stat-label">Total Alerts</div></div>
-          <div class="stat"><div class="stat-value" id="stat-events">—</div><div class="stat-label">Total Events</div></div>
-          <div class="stat"><div class="stat-value" id="stat-sessions">—</div><div class="stat-label">Sessions</div></div>
-          <div class="stat"><div class="stat-value" id="stat-flagged">—</div><div class="stat-label">Flagged Sessions</div></div>
-        </div>
-      </div>
-
-      <div class="sidebar">
-        <div class="quick-actions">
-          <h3 class="card-title">QUICK ACCESS</h3>
-          <a href="/events"   class="action-btn">→ View Events</a>
-          <a href="/alerts"   class="action-btn">→ View Alerts</a>
-          <a href="/sessions" class="action-btn">→ View Sessions</a>
-          <a href="/stats"    class="action-btn">→ Dashboard Stats</a>
-        </div>
-
-        <div class="system-info">
-          <h3 class="card-title">SYSTEM STATUS</h3>
-          <div class="info-item"><span class="info-label">Status:</span><span class="info-value">ACTIVE</span></div>
-          <div class="info-item"><span class="info-label">Version:</span><span class="info-value">1.0.0</span></div>
-          <div class="info-item"><span class="info-label">DB:</span><span class="info-value" id="db-status">checking...</span></div>
-        </div>
-      </div>
-    </div>
-
-    <footer>
-      <span>ThreatLens © 2024 | Security Intelligence Platform</span>
-      <form action="/auth/logout" method="POST">
-        <button type="submit" class="btn-logout">Logout</button>
-      </form>
-    </footer>
+  <div class="card">
+    <div class="org">{{ org_name }}</div>
+    <div class="greeting">Welcome, <span>{{ username }}</span></div>
+    <div class="status">● LOGIN VERIFIED</div>
+    <div class="spinner"></div>
+    <div class="redirect-msg">Redirecting to your organization system...</div>
+    <form action="/auth/logout" method="POST">
+      <button class="logout-link" type="submit">Not you? Logout</button>
+    </form>
   </div>
-
-  <script>
-    // Fetch real counts from existing API endpoints
-    async function loadStats() {
-      try {
-        const [events, alerts, sessions] = await Promise.all([
-          fetch('/api/events').then(r => r.json()),
-          fetch('/api/alerts').then(r => r.json()),
-          fetch('/api/sessions').then(r => r.json()),
-        ]);
-        document.getElementById('stat-events').textContent   = Array.isArray(events)   ? events.length   : '—';
-        document.getElementById('stat-alerts').textContent   = Array.isArray(alerts)   ? alerts.length   : '—';
-        document.getElementById('stat-sessions').textContent = Array.isArray(sessions) ? sessions.length : '—';
-        const flagged = Array.isArray(sessions) ? sessions.filter(s => s.is_flagged).length : '—';
-        document.getElementById('stat-flagged').textContent  = flagged;
-        document.getElementById('db-status').textContent     = 'CONNECTED';
-        document.getElementById('db-status').style.color     = 'var(--success)';
-      } catch(e) {
-        document.getElementById('db-status').textContent = 'ERROR';
-        document.getElementById('db-status').style.color = 'var(--danger)';
-      }
-    }
-    loadStats();
-  </script>
 </body>
 </html>
