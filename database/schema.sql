@@ -6,7 +6,7 @@ Drop table if exists Organizations cascade;
 
 Create table Organizations (
 org_id Serial Primary Key,
-org_name varchar(255),
+org_name varchar(250),
 created_at Timestamp
 );
 
