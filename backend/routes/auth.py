@@ -70,7 +70,13 @@ def login():
     check_off_hours(user["user_id"], event_id, datetime.now())
     check_concurrent_session(user["user_id"], ip, event_id)
 
-    resp = make_response(redirect("/sessions" if user["role_id"] == 1 else "/welcome"))
+    if user["role_id"] == 1:
+        redirect_url = "/sessions"
+    elif user["role_id"] == 2:
+        redirect_url = "/alerts"
+    else:
+        redirect_url = "/welcome"
+    resp = make_response(redirect(redirect_url))
     resp.set_cookie("session_token", token)
     return resp
 

@@ -38,6 +38,6 @@ def get_current_user(token):
         JOIN users u ON s.user_id = u.user_id
         JOIN organizations o ON u.org_id = o.org_id
         WHERE s.session_token = %s
-          AND s.sta_tus = 'Active'
+          AND s.sta_tus IN ('Active', 'Suspicious')
     """, (token,))
     return rows[0] if rows else None
