@@ -25,6 +25,7 @@ def get_events():
             FROM events e
             JOIN users u    ON e.user_id  = u.user_id
             JOIN assets a   ON e.asset_id = a.asset_id
+            WHERE u.org_id = %s
             ORDER BY e.times_tamp DESC
         """)
     return jsonify([dict(r) for r in rows])
@@ -51,6 +52,7 @@ def get_alerts():
             FROM alerts al
             JOIN events e ON al.event_id = e.event_id
             JOIN users u  ON e.user_id   = u.user_id
+            WHERE u.org_id = %s
             ORDER BY al.created_at DESC
         """)
     return jsonify([dict(r) for r in rows])
@@ -77,6 +79,7 @@ def get_stats():
     events_per_day = query(f"""
         SELECT DATE(e.times_tamp) as day, COUNT(*) as count
         FROM events e JOIN users u ON e.user_id = u.user_id
+        WHERE u.org_id = %s
         {org_filter}
         GROUP BY day ORDER BY day
     """, param)
@@ -86,6 +89,7 @@ def get_stats():
         FROM alerts al
         JOIN events e ON al.event_id = e.event_id
         JOIN users u  ON e.user_id   = u.user_id
+        WHERE u.org_id = %s
         {org_filter}
         GROUP BY al.severity
     """, param)
@@ -95,6 +99,7 @@ def get_stats():
         FROM alerts al
         JOIN events e ON al.event_id = e.event_id
         JOIN users u  ON e.user_id   = u.user_id
+        WHERE u.org_id = %s
         {org_filter}
         GROUP BY al.alert_type
     """, param)

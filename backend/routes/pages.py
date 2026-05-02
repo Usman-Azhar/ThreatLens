@@ -34,8 +34,9 @@ def sessions_page():
                s.login_time, s.last_active, s.logout_time, s.sta_tus, s.is_flagged
         FROM sessions s
         JOIN users u ON s.user_id = u.user_id
+        WHERE u.org_id = %s
         ORDER BY s.login_time DESC
-    """)
+    """, (user["org_id"],))
     return render_template("sessions.html", sessions=rows, role_id=user["role_id"])
 
 
@@ -56,8 +57,9 @@ def events_page():
         FROM events e
         JOIN users u  ON e.user_id  = u.user_id
         JOIN assets a ON e.asset_id = a.asset_id
+        WHERE u.org_id = %s
         ORDER BY e.times_tamp DESC
-    """)
+    """, (user["org_id"],))
     return render_template("events.html", events=rows, role_id=user["role_id"])
 
 
@@ -78,8 +80,9 @@ def alerts_page():
         FROM alerts al
         JOIN events e ON al.event_id = e.event_id
         JOIN users u  ON e.user_id   = u.user_id
+        WHERE u.org_id = %s
         ORDER BY al.created_at DESC
-    """)
+    """, (user["org_id"],))
     return render_template("alerts.html", alerts=rows, role_id=user["role_id"])
 
 
@@ -94,26 +97,35 @@ def stats_page():
     if user["role_id"] not in (1, 2):
         log_unauthorized(user, "/stats")
         return redirect("/welcome")
+
+    org_id = user["org_id"]
+
     events_per_day = query("""
         SELECT DATE(e.times_tamp) as day, COUNT(*) as count
         FROM events e
         JOIN users u ON e.user_id = u.user_id
+        WHERE u.org_id = %s
         GROUP BY day ORDER BY day
-    """)
+    """, (org_id,))
+
     severity_breakdown = query("""
         SELECT al.severity, COUNT(*) as count
         FROM alerts al
         JOIN events e ON al.event_id = e.event_id
         JOIN users u  ON e.user_id   = u.user_id
+        WHERE u.org_id = %s
         GROUP BY al.severity
-    """)
+    """, (org_id,))
+
     alert_types = query("""
         SELECT al.alert_type, COUNT(*) as count
         FROM alerts al
         JOIN events e ON al.event_id = e.event_id
         JOIN users u  ON e.user_id   = u.user_id
+        WHERE u.org_id = %s
         GROUP BY al.alert_type
-    """)
+    """, (org_id,))
+
     return render_template("stats.html",
         events_per_day=events_per_day,
         severity_breakdown=severity_breakdown,

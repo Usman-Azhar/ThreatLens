@@ -25,6 +25,7 @@ def get_sessions():
                    s.sta_tus, s.is_flagged
             FROM sessions s
             JOIN users u ON s.user_id = u.user_id
+            WHERE u.org_id = %s
             ORDER BY s.login_time DESC
         """)
     return jsonify([dict(r) for r in rows])
