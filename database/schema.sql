@@ -71,7 +71,7 @@ CREATE TABLE events (
     event_id    SERIAL PRIMARY KEY,
     user_id     INT          NOT NULL REFERENCES users(user_id),
     asset_id    INT          NOT NULL REFERENCES assets(asset_id),
-    session_id  INT          NOT NULL REFERENCES sessions(session_id),
+    session_id  INT          REFERENCES sessions(session_id),
     times_tamp   TIMESTAMP    DEFAULT NOW(),
     event_type  VARCHAR(100) NOT NULL,
     ip_address  INET,
@@ -88,7 +88,7 @@ CREATE TABLE alerts (
     event_id    INT          NOT NULL REFERENCES events(event_id),
     alert_type  VARCHAR(100) NOT NULL,
     severity    VARCHAR(50)  CHECK (severity IN ('Low', 'Medium', 'High', 'Critical')),
-    sta_tus      VARCHAR(50)  CHECK (sta_tus IN ('Open', 'Investigating', 'Resolved')),
+    sta_tus      VARCHAR(50)  CHECK (sta_tus IN ('Open', 'Investigating', 'Resolved', 'False Positive')),
     created_at  TIMESTAMP    DEFAULT NOW()
 );
 

@@ -1,5 +1,5 @@
 -- PROCEDURE
--- Resolves an alert and flags the related session as Suspicious
+-- Resolves an alert and terminates the related session
 CREATE OR REPLACE PROCEDURE resolve_alert(
     p_alert_id   INT,
     p_analyst_id INT
@@ -25,9 +25,9 @@ BEGIN
     SET sta_tus = 'Resolved'
     WHERE alert_id = p_alert_id;
 
-    -- Mark the session as Suspicious
+    -- Terminate the session — threat is handled, session is closed
     UPDATE sessions
-    SET sta_tus = 'Suspicious'
+    SET sta_tus = 'Terminated'
     WHERE session_id = v_session_id;
 
 END;
