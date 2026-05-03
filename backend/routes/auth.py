@@ -35,6 +35,13 @@ def login():
 
     user = rows[0]
 
+    # Get the correct asset for this user's org
+    asset_rows = query(
+        "SELECT asset_id FROM assets WHERE org_id = %s AND asset_type = 'Web Application' LIMIT 1",
+        (user["org_id"],)
+    )
+    asset_id = asset_rows[0]["asset_id"] if asset_rows else 1
+
     try:
         password_valid = bcrypt.checkpw(password.encode(), user["password_hash"].encode())
     except ValueError:
@@ -44,8 +51,8 @@ def login():
         query(
             """INSERT INTO events
                (event_type, user_id, ip_address, success, asset_id, session_id)
-               VALUES ('login_failed', %s, %s, false, 1, NULL)""",
-            (user["user_id"], ip)
+               VALUES ('login_failed', %s, %s, false, %s, NULL)""",
+            (user["user_id"], ip, asset_id)
         )
         return render_template("login.html", error="Invalid credentials")
 
@@ -64,9 +71,9 @@ def login():
     event_rows = query(
         """INSERT INTO events
            (event_type, user_id, session_id, ip_address, success, asset_id)
-           VALUES ('login_success', %s, %s, %s, true, 1)
+           VALUES ('login_success', %s, %s, %s, true, %s)
            RETURNING event_id""",
-        (user["user_id"], session_id, ip)
+        (user["user_id"], session_id, ip, asset_id)
     )
 
     event_id = event_rows[0]["event_id"]

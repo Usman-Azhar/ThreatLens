@@ -36,3 +36,5 @@ CREATE INDEX IF NOT EXISTS idx_sessions_flagged_status
 -- Speeds up role-based permission lookups
 CREATE INDEX IF NOT EXISTS idx_role_permissions_role
     ON role_permissions(role_id);
+
+
