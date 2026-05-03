@@ -8,16 +8,16 @@ The system models a real-world threat monitoring environment where data is colle
 
 ✨ Key Features
 
-Organization and user management
-Security event logging and tracking
-Session monitoring
-Basic threat detection logic
+Organization and user management,
+Security event logging and tracking,
+Session monitoring,
+Basic threat detection logic,
 Analytical queries for insights
 
 🗄️ Database Concepts Used
 
-Relational schema design
-Primary and foreign key constraints
-Normalization
-SQL queries (DDL & DML)
+Relational schema design,
+Primary and foreign key constraints,
+Normalization,
+SQL queries (DDL & DML),
 Triggers for automated actions
