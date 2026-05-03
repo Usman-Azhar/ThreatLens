@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, redirect
 from flask_cors import CORS
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -17,6 +17,10 @@ app.register_blueprint(sessions_bp, url_prefix="/api/sessions")
 app.register_blueprint(orgs_bp,     url_prefix="/api/orgs")
 app.register_blueprint(auth_bp)
 app.register_blueprint(pages_bp)
+
+@app.route("/")
+def index():
+    return redirect("/auth/login")
 
 @app.route("/api/health")
 def health():
