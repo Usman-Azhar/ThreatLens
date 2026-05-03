@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
-from werkzeug.middleware.proxy_fix import ProxyFix  # ADD THIS
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from routes.events   import events_bp
 from routes.sessions import sessions_bp
@@ -9,7 +9,7 @@ from routes.auth     import auth_bp
 from routes.pages    import pages_bp
 
 app = Flask(__name__, template_folder="templates")
-app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)  # ADD THIS
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 CORS(app)
 
 app.register_blueprint(events_bp,   url_prefix="/api/events")
