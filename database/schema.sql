@@ -1,33 +1,45 @@
--- SQL Tables File
--- all 8 CREATE TABLE statements 
+-- =============================================================
+-- schema.sql
+-- ThreatLens — Full Database Schema
+-- Run this ONCE to create all tables from scratch
+-- =============================================================
 
--- Abdullah
-Drop table if exists Organizations cascade;
+-- ── DROP ORDER (reverse FK dependency) ───────────────────────
+DROP TABLE IF EXISTS login_attempts    CASCADE;
+DROP TABLE IF EXISTS role_permissions  CASCADE;
+DROP TABLE IF EXISTS audit_log         CASCADE;
+DROP TABLE IF EXISTS alerts            CASCADE;
+DROP TABLE IF EXISTS events            CASCADE;
+DROP TABLE IF EXISTS sessions          CASCADE;
+DROP TABLE IF EXISTS assets            CASCADE;
+DROP TABLE IF EXISTS users             CASCADE;
+DROP TABLE IF EXISTS roles             CASCADE;
+DROP TABLE IF EXISTS threat_intelligence CASCADE;
+DROP TABLE IF EXISTS organizations     CASCADE;
 
-Create table Organizations (
-org_id Serial Primary Key,
-org_name varchar(250),
-created_at Timestamp
+
+-- ── ORGANIZATIONS ─────────────────────────────────────────────
+CREATE TABLE organizations (
+    org_id     SERIAL      PRIMARY KEY,
+    org_name   VARCHAR(250),
+    created_at TIMESTAMP
 );
 
 
--- Fatima
-Drop table if exists roles cascade;
-
-
+-- ── ROLES ─────────────────────────────────────────────────────
+-- permissions column kept for legacy reference only.
+-- Actual permissions live in role_permissions (3NF).
 CREATE TABLE roles (
-    role_id    SERIAL PRIMARY KEY,
-    role_name  VARCHAR(50)  NOT NULL,
+    role_id     SERIAL       PRIMARY KEY,
+    role_name   VARCHAR(50)  NOT NULL,
     permissions TEXT
 );
 
--- Fatima
-Drop table if exists users cascade;
 
-
+-- ── USERS ─────────────────────────────────────────────────────
 CREATE TABLE users (
-    user_id       SERIAL PRIMARY KEY,
-    org_id        INT          NOT NULL REFERENCES Organizations(org_id),
+    user_id       SERIAL       PRIMARY KEY,
+    org_id        INT          NOT NULL REFERENCES organizations(org_id),
     role_id       INT          NOT NULL REFERENCES roles(role_id),
     username      VARCHAR(100) NOT NULL UNIQUE,
     email         VARCHAR(255) NOT NULL UNIQUE,
@@ -35,190 +47,103 @@ CREATE TABLE users (
     created_at    TIMESTAMP    DEFAULT NOW()
 );
 
--- Abdullah
-Drop table if exists Assets cascade;
 
-Create table Assets (
-asset_id Serial Primary Key,
-org_id Int references Organizations (org_id),
-asset_name Varchar(255),
-asset_type varchar(100)
+-- ── ASSETS ────────────────────────────────────────────────────
+CREATE TABLE assets (
+    asset_id   SERIAL       PRIMARY KEY,
+    org_id     INT          REFERENCES organizations(org_id),
+    asset_name VARCHAR(255),
+    asset_type VARCHAR(100)
 );
 
--- Fatima
-Drop table if exists sessions cascade;
 
-
+-- ── SESSIONS ──────────────────────────────────────────────────
 CREATE TABLE sessions (
-    session_id    SERIAL PRIMARY KEY,
+    session_id    SERIAL       PRIMARY KEY,
     user_id       INT          NOT NULL REFERENCES users(user_id),
-    org_id        INT          NOT NULL REFERENCES Organizations(org_id),
+    org_id        INT          NOT NULL REFERENCES organizations(org_id),
     session_token VARCHAR(256) NOT NULL UNIQUE,
     ip_address    INET,
     device_info   VARCHAR(255),
     login_time    TIMESTAMP    DEFAULT NOW(),
     last_active   TIMESTAMP    DEFAULT NOW(),
     logout_time   TIMESTAMP,
-    sta_tus       VARCHAR(50)  DEFAULT 'Active' CHECK (sta_tus IN ('Active', 'Expired', 'Terminated', 'Suspicious')),
+    sta_tus       VARCHAR(50)  DEFAULT 'Active'
+                  CHECK (sta_tus IN ('Active', 'Expired', 'Terminated', 'Suspicious')),
     is_flagged    BOOLEAN      DEFAULT FALSE
 );
 
--- Usman 
-Drop table if exists events cascade;
 
-
+-- ── EVENTS ────────────────────────────────────────────────────
+-- session_id is nullable: login_failed events exist before a session is created.
+-- asset_id is nullable: if an asset is deleted, the forensic record is preserved.
 CREATE TABLE events (
-    event_id    SERIAL PRIMARY KEY,
-    user_id     INT          NOT NULL REFERENCES users(user_id),
-    asset_id    INT          NOT NULL REFERENCES assets(asset_id),
-    session_id  INT          REFERENCES sessions(session_id),
-    times_tamp   TIMESTAMP    DEFAULT NOW(),
-    event_type  VARCHAR(100) NOT NULL,
-    ip_address  INET,
-    success     BOOLEAN      DEFAULT FALSE,
-    metadata    TEXT
+    event_id   SERIAL       PRIMARY KEY,
+    user_id    INT          NOT NULL REFERENCES users(user_id),
+    asset_id   INT          REFERENCES assets(asset_id)   ON DELETE SET NULL,
+    session_id INT          REFERENCES sessions(session_id) ON DELETE SET NULL,
+    times_tamp TIMESTAMP    DEFAULT NOW(),
+    event_type VARCHAR(100) NOT NULL,
+    ip_address INET,
+    success    BOOLEAN      DEFAULT FALSE,
+    metadata   TEXT
 );
 
--- Usman
-Drop table if exists alerts cascade;
 
-
+-- ── ALERTS ────────────────────────────────────────────────────
+-- Cascades on event delete: no orphan alerts.
 CREATE TABLE alerts (
-    alert_id    SERIAL PRIMARY KEY,
-    event_id    INT          NOT NULL REFERENCES events(event_id),
-    alert_type  VARCHAR(100) NOT NULL,
-    severity    VARCHAR(50)  CHECK (severity IN ('Low', 'Medium', 'High', 'Critical')),
-    sta_tus      VARCHAR(50)  CHECK (sta_tus IN ('Open', 'Investigating', 'Resolved', 'False Positive')),
-    created_at  TIMESTAMP    DEFAULT NOW()
-);
-
--- Abdullah
-Drop table if exists Threat_Intelligence cascade;
-
-Create table Threat_Intelligence (
-threat_id Serial Primary Key,
-threat_type Varchar(100),
-value Varchar(255),
-last_updated Timestamp
+    alert_id   SERIAL       PRIMARY KEY,
+    event_id   INT          NOT NULL REFERENCES events(event_id) ON DELETE CASCADE,
+    alert_type VARCHAR(100) NOT NULL,
+    severity   VARCHAR(50)  CHECK (severity IN ('Low', 'Medium', 'High', 'Critical')),
+    sta_tus    VARCHAR(50)  CHECK (sta_tus IN ('Open', 'Investigating', 'Resolved', 'False Positive')),
+    created_at TIMESTAMP    DEFAULT NOW()
 );
 
 
-
-
--- =============================================================
--- schema_fixes.sql
--- Run this ONCE in pgAdmin Query Tool
--- Fixes bugs + adds new tables for normalization demo
--- =============================================================
-
-
--- ── FIX 1: False Positive in alerts CHECK constraint ─────────
--- Your backend sends 'False Positive' but the CHECK only allowed
--- Open / Investigating / Resolved — this was silently crashing.
--- We drop the old constraint and add the corrected one.
-
-ALTER TABLE alerts
-    DROP CONSTRAINT IF EXISTS alerts_sta_tus_check;
-
-ALTER TABLE alerts
-    ADD CONSTRAINT alerts_sta_tus_check
-    CHECK (sta_tus IN ('Open', 'Investigating', 'Resolved', 'False Positive'));
-
-
--- ── FIX 2: Make session_id nullable in events ─────────────────
--- auth.py inserts login_failed events before a session exists,
--- passing session_id = 1 as a placeholder right now.
--- Making it nullable is the correct schema design.
-
-ALTER TABLE events
-    ALTER COLUMN session_id DROP NOT NULL;
-
-
--- ── FIX 3: ON DELETE behaviour on foreign keys ────────────────
--- Your DROP TABLE statements use CASCADE but your FK definitions
--- had no ON DELETE rule — meaning deleting a parent row would
--- throw an error instead of cascading cleanly.
-
--- alerts → events: if an event is deleted, its alerts go too
-ALTER TABLE alerts
-    DROP CONSTRAINT IF EXISTS alerts_event_id_fkey;
-ALTER TABLE alerts
-    ADD CONSTRAINT alerts_event_id_fkey
-    FOREIGN KEY (event_id) REFERENCES events(event_id)
-    ON DELETE CASCADE;
-
--- events → sessions: if a session is deleted, its events stay
--- but the session_id is nulled out (forensic record preserved)
-ALTER TABLE events
-    DROP CONSTRAINT IF EXISTS events_session_id_fkey;
-ALTER TABLE events
-    ADD CONSTRAINT events_session_id_fkey
-    FOREIGN KEY (session_id) REFERENCES sessions(session_id)
-    ON DELETE SET NULL;
-
--- events → assets: if an asset is removed, events keep the record
-ALTER TABLE events
-    DROP CONSTRAINT IF EXISTS events_asset_id_fkey;
-ALTER TABLE events
-    ADD CONSTRAINT events_asset_id_fkey
-    FOREIGN KEY (asset_id) REFERENCES assets(asset_id)
-    ON DELETE SET NULL;
-
-
--- ── NEW TABLE 1: audit_log ────────────────────────────────────
--- Tracks every UPDATE made to the alerts table automatically.
--- Demonstrates: normalization, triggers, transaction awareness.
--- No app code needed — the trigger fires inside PostgreSQL.
-
-CREATE TABLE IF NOT EXISTS audit_log (
-    log_id      SERIAL PRIMARY KEY,
-    table_name  VARCHAR(100) NOT NULL,
-    action      VARCHAR(50)  NOT NULL,          -- 'UPDATE'
-    changed_by  VARCHAR(100) DEFAULT 'system',  -- future: pass username
-    changed_at  TIMESTAMP    DEFAULT NOW(),
-    old_value   TEXT,                           -- old sta_tus
-    new_value   TEXT                            -- new sta_tus
+-- ── THREAT INTELLIGENCE ───────────────────────────────────────
+CREATE TABLE threat_intelligence (
+    threat_id    SERIAL       PRIMARY KEY,
+    threat_type  VARCHAR(100),
+    value        VARCHAR(255),
+    last_updated TIMESTAMP
 );
 
 
--- ── NEW TABLE 2: role_permissions ────────────────────────────
--- Normalizes permissions out of the roles.permissions TEXT column
--- into a proper junction table. Demonstrates 3NF — a role can
--- have many permissions, a permission can belong to many roles.
+-- ── AUDIT LOG ─────────────────────────────────────────────────
+-- Populated automatically by trg_audit_alert_status trigger.
+-- Tracks every alert status change without any app code.
+CREATE TABLE audit_log (
+    log_id     SERIAL       PRIMARY KEY,
+    table_name VARCHAR(100) NOT NULL,
+    action     VARCHAR(50)  NOT NULL,
+    changed_by VARCHAR(100) DEFAULT 'system',
+    changed_at TIMESTAMP    DEFAULT NOW(),
+    old_value  TEXT,
+    new_value  TEXT
+);
 
-CREATE TABLE IF NOT EXISTS role_permissions (
-    rp_id       SERIAL PRIMARY KEY,
-    role_id     INT         NOT NULL REFERENCES roles(role_id) ON DELETE CASCADE,
-    permission  VARCHAR(100) NOT NULL,
+
+-- ── ROLE PERMISSIONS ──────────────────────────────────────────
+-- Normalizes permissions out of roles.permissions TEXT column.
+-- 3NF: a role has many permissions, a permission belongs to many roles.
+CREATE TABLE role_permissions (
+    rp_id      SERIAL       PRIMARY KEY,
+    role_id    INT          NOT NULL REFERENCES roles(role_id) ON DELETE CASCADE,
+    permission VARCHAR(100) NOT NULL,
     UNIQUE (role_id, permission)
 );
 
--- Seed with sensible defaults matching your existing roles
-INSERT INTO role_permissions (role_id, permission)
-VALUES
-    (1, 'view_sessions'),
-    (1, 'view_events'),
-    (1, 'view_alerts'),
-    (1, 'view_stats'),
-    (1, 'flag_session'),
-    (1, 'update_alert'),
-    (2, 'view_sessions'),
-    (2, 'view_events')
-ON CONFLICT DO NOTHING;
 
-
--- ── NEW TABLE 3: login_attempts ──────────────────────────────
--- Dedicated table for login attempts, separate from events.
--- Cleaner schema design — events tracks what happened inside
--- the app, login_attempts tracks authentication specifically.
--- Demonstrates: proper normalization, separation of concerns.
-
-CREATE TABLE IF NOT EXISTS login_attempts (
-    attempt_id   SERIAL PRIMARY KEY,
+-- ── LOGIN ATTEMPTS ────────────────────────────────────────────
+-- Dedicated auth tracking table, separate from general events.
+-- Populated automatically by trg_sync_login_attempts trigger.
+CREATE TABLE login_attempts (
+    attempt_id   SERIAL    PRIMARY KEY,
     user_id      INT       REFERENCES users(user_id) ON DELETE SET NULL,
     ip_address   INET,
     attempted_at TIMESTAMP DEFAULT NOW(),
     success      BOOLEAN   NOT NULL,
     user_agent   VARCHAR(255)
 );
-
