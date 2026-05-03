@@ -35,7 +35,6 @@ def login():
 
     user = rows[0]
 
-    # Get the correct asset for this user's org
     asset_rows = query(
         "SELECT asset_id FROM assets WHERE org_id = %s AND asset_type = 'Web Application' LIMIT 1",
         (user["org_id"],)

@@ -4,7 +4,7 @@ from psycopg2.extras import RealDictCursor
 DB_CONFIG = {
     "dbname":   "ThreatLens",
     "user":     "postgres",
-    "password": "pgadmin",
+    "password": "ghostbyte",
     "host":     "localhost",
     "port":     "5432"
 }
