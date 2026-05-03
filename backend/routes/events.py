@@ -115,14 +115,15 @@ def log_event():
     session_id = data.get("session_id")
     event_type = data.get("event_type")
     role_id    = data.get("role_id")
+    success    = data.get("success", True)   # ← FIX: read from body, default True
     ip         = request.remote_addr
 
     row = query(
         """INSERT INTO events
                (user_id, asset_id, session_id, event_type, ip_address, success, times_tamp)
-           VALUES (%s, %s, %s, %s, %s, TRUE, NOW())
+           VALUES (%s, %s, %s, %s, %s, %s, NOW())
            RETURNING event_id""",
-        (user_id, asset_id, session_id, event_type, ip),
+        (user_id, asset_id, session_id, event_type, ip, success),
     )
     event_id = row[0]["event_id"]
 
