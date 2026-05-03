@@ -4,12 +4,12 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>{{ org_name }} — Portal</title>
-<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet"/>
 <style>
   *{margin:0;padding:0;box-sizing:border-box;}
   body{
-    background:#040d14;
-    color:#c8dde8;
+    background:#161616;
+    color:#e0e0e0;
     font-family:'Exo 2',sans-serif;
     min-height:100vh;
     display:flex;
@@ -19,41 +19,41 @@
   .card{
     text-align:center;
     padding:3rem 4rem;
-    border:1px solid #0e3a52;
+    border:1px solid #2a2a2a;
     border-radius:8px;
-    background:#0a1e2e;
+    background:#1e1e1e;
     max-width:480px;
     width:100%;
   }
   .org{
-    font-family:'Rajdhani',sans-serif;
+    font-family:'Exo 2',sans-serif;
     font-size:1.8rem;
     font-weight:700;
-    color:#00c8ff;
+    color:#6a9e7f;
     letter-spacing:3px;
     text-transform:uppercase;
     margin-bottom:0.5rem;
   }
   .greeting{
     font-size:1rem;
-    color:#4a7a94;
+    color:#5a5a5a;
     margin-bottom:2rem;
   }
   .greeting span{
-    color:#c8dde8;
+    color:#e0e0e0;
     font-weight:600;
   }
   .status{
     font-size:0.85rem;
-    color:#00ff9d;
+    color:#6a9e7f;
     margin-bottom:2rem;
     letter-spacing:1px;
   }
   .spinner{
     width:32px;
     height:32px;
-    border:3px solid #0e3a52;
-    border-top:3px solid #00c8ff;
+    border:3px solid #2a2a2a;
+    border-top:3px solid #6a9e7f;
     border-radius:50%;
     animation:spin 1s linear infinite;
     margin:0 auto 1.5rem;
@@ -61,16 +61,16 @@
   @keyframes spin{to{transform:rotate(360deg);}}
   .redirect-msg{
     font-size:0.78rem;
-    color:#4a7a94;
+    color:#5a5a5a;
     letter-spacing:1px;
   }
   .logout-link{
     display:inline-block;
     margin-top:2rem;
     font-size:0.78rem;
-    color:#4a7a94;
+    color:#5a5a5a;
     text-decoration:none;
-    border-bottom:1px solid #0e3a52;
+    border-bottom:1px solid #2a2a2a;
     padding-bottom:2px;
     cursor:pointer;
     background:none;
@@ -79,7 +79,7 @@
     border-right:none;
     font-family:'Exo 2',sans-serif;
   }
-  .logout-link:hover{color:#ff3b5c;}
+  .logout-link:hover{color:#c0392b;}
 </style>
 </head>
 <body>
