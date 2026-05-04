@@ -32,23 +32,24 @@
     background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);}
 
   /* NAV */
-  nav{position:fixed;top:0;left:0;right:0;z-index:100;
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
     background:rgba(12,12,12,0.96);backdrop-filter:blur(12px);
     border-bottom:1px solid var(--border);
-    display:flex;align-items:center;justify-content:center;
-    padding:0 2rem;height:60px;gap:2rem;}
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 2rem;height:60px;
+  }
   .nav-logo{font-family:'Exo 2',sans-serif;font-weight:600;font-size:1.2rem;color:var(--text);letter-spacing:0.5px;display:flex;align-items:center;gap:10px;}
   .nav-logo span{color:var(--accent);}
   .logo-dot{width:7px;height:7px;background:var(--accent);border-radius:50%;
     animation:pulse 2s infinite;}
-  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(106,158,127,0.3);}50%{box-shadow:0 0 0 5px rgba(106,158,127,0);}}50%{box-shadow:0 0 0 6px rgba(0,255,157,0);}}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(106,158,127,0.3);}50%{box-shadow:0 0 0 6px rgba(0,255,157,0);}}
   .nav-links{display:flex;gap:0.5rem;align-items:center;}
   .nav-links a{font-family:'Exo 2',sans-serif;font-weight:400;font-size:0.8rem;
     letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;
     color:var(--text-dim);padding:6px 14px;border:1px solid transparent;border-radius:3px;transition:all 0.2s;}
   .nav-links a:hover,.nav-links a.active{color:var(--accent);border-color:var(--border);
     background:rgba(106,158,127,0.08);}
-  .nav-logout{position:absolute;right:2rem;}
   .nav-logout form button{
     font-family:'Exo 2',sans-serif;font-weight:400;font-size:0.8rem;letter-spacing:0.5px;text-transform:uppercase;background:transparent;
     border:1px solid var(--danger);color:var(--danger);
@@ -127,6 +128,7 @@
 </style>
 </head>
 <body>
+
 <nav>
   <div class="nav-logo">
     <div class="logo-dot"></div>
@@ -160,7 +162,7 @@
 
     <!-- Events per day -->
     <div style="background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:1.5rem;">
-      <div style="font-family:'Rajdhani',sans-serif;font-size:0.85rem;letter-spacing:2px;
+      <div style="font-family:'Exo 2',sans-serif;font-size:0.85rem;letter-spacing:2px;
         text-transform:uppercase;color:var(--text-dim);margin-bottom:1rem;">
         Events per Day
       </div>
@@ -169,7 +171,7 @@
 
     <!-- Severity breakdown -->
     <div style="background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:1.5rem;">
-      <div style="font-family:'Rajdhani',sans-serif;font-size:0.85rem;letter-spacing:2px;
+      <div style="font-family:'Exo 2',sans-serif;font-size:0.85rem;letter-spacing:2px;
         text-transform:uppercase;color:var(--text-dim);margin-bottom:1rem;">
         Alert Severity Breakdown
       </div>
@@ -180,7 +182,7 @@
 
   <!-- Alert types -->
   <div style="background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:1.5rem;">
-    <div style="font-family:'Rajdhani',sans-serif;font-size:0.85rem;letter-spacing:2px;
+    <div style="font-family:'Exo 2',sans-serif;font-size:0.85rem;letter-spacing:2px;
       text-transform:uppercase;color:var(--text-dim);margin-bottom:1rem;">
       Alert Type Breakdown
     </div>
@@ -197,11 +199,10 @@
   }
 </script>
 <script>
-  // Data injected by Flask
   const statsData = JSON.parse(document.getElementById('stats-data').textContent);
   const eventsPerDay   = statsData.eventsPerDay;
   const severityData   = statsData.severityData;
-  const alertTypesData = statsData.alertTypesData; // FIX: was statsData.alertTypes (wrong key)
+  const alertTypesData = statsData.alertTypesData;
 
   const gridColor = "rgba(42,42,42,0.8)";
   const tickColor = "#5a5a5a";

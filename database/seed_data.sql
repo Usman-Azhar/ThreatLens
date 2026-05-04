@@ -34,7 +34,9 @@ INSERT INTO assets (org_id, asset_name, asset_type) VALUES
 (2, 'GIKI Database Server', 'Database');
 
 
+
 INSERT INTO threat_intelligence (threat_type, value, last_updated) VALUES
+('malicious_ip', '10.1.59.204', '2026-05-04'),
 ('malicious_ip', '45.33.32.156', '2024-01-01'),
 ('malicious_ip', '192.42.116.16', '2024-01-01'),
 ('tor_exit_node', '185.220.101.45', '2024-01-01'),
