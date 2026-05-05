@@ -1,17 +1,6 @@
--- =============================================================
--- procedure.sql
--- ThreatLens — Stored Procedures
--- =============================================================
-
-
--- ── PROCEDURE: resolve_alert ──────────────────────────────────
--- Resolves an alert and terminates the related session.
--- Called manually by an analyst after investigating a threat.
---
--- Parameters:
---   p_alert_id   — the alert to resolve
---   p_analyst_id — the analyst performing the action (for future audit use)
---
+-- Resolves an alert and kills the related session.
+-- Trace chain: alert → event → session, then close both ends.
+-- p_analyst_id is unused for now, will hook into audit log later.
 -- Usage: CALL resolve_alert(alert_id, analyst_user_id);
 
 CREATE OR REPLACE PROCEDURE resolve_alert(
@@ -24,24 +13,24 @@ DECLARE
     v_event_id   INT;
     v_session_id INT;
 BEGIN
-    -- Get the event linked to this alert
+    -- find the event tied to this alert
     SELECT event_id INTO v_event_id
     FROM alerts
     WHERE alert_id = p_alert_id;
 
-    -- Get the session linked to that event
+    -- then grab the session from that event
     SELECT session_id INTO v_session_id
     FROM events
     WHERE event_id = v_event_id;
 
-    -- Mark the alert as Resolved
+    -- mark alert done
     UPDATE alerts
-    SET sta_tus = 'Resolved'
+    SET status = 'Resolved'
     WHERE alert_id = p_alert_id;
 
-    -- Terminate the session — threat is handled, session is closed
+    -- boot the session
     UPDATE sessions
-    SET sta_tus = 'Terminated'
+    SET status = 'Terminated'
     WHERE session_id = v_session_id;
 
 END;
