@@ -37,7 +37,7 @@ SELECT
     s.is_flagged,
     t.threat_type,
     t.last_updated
-FROM sessions s
+FROM sessions s=
 JOIN users u ON s.user_id = u.user_id
 JOIN threat_intelligence t ON s.ip_address::text = t.value;
 

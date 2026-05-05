@@ -3,13 +3,15 @@ from db import query
 
 orgs_bp = Blueprint("orgs", __name__)
 
-# GET /api/orgs/
+
+# returns all orgs — used for dropdowns/listings
 @orgs_bp.route("/", methods=["GET"])
 def get_orgs():
     rows = query("SELECT org_id, org_name FROM organizations ORDER BY org_id")
     return jsonify([dict(r) for r in rows])
 
-# GET /api/orgs/<id>/users
+
+# returns all users in a given org with their role names
 @orgs_bp.route("/<int:org_id>/users", methods=["GET"])
 def get_users(org_id):
     rows = query("""

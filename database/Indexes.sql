@@ -1,48 +1,33 @@
--- =============================================================
--- indexes.sql
--- ThreatLens — All Indexes
--- =============================================================
+-- Indexes for the most queried columns across all tables.
 
-
--- ── EVENTS ────────────────────────────────────────────────────
-
--- Speeds up per-user event lookups and event type filtering
+-- EVENTS
 CREATE INDEX IF NOT EXISTS idx_events_user_event
     ON events(user_id, event_type);
 
--- Speeds up time-range queries on events
 CREATE INDEX IF NOT EXISTS idx_events_timestamp
-    ON events(times_tamp);
+    ON events(timestamp);
 
--- Speeds up login_failed filtering used in brute force detection
+-- DESC because brute force detection always wants latest failures first
 CREATE INDEX IF NOT EXISTS idx_events_type_time
-    ON events(event_type, times_tamp DESC);
+    ON events(event_type, timestamp DESC);
 
 
--- ── SESSIONS ──────────────────────────────────────────────────
-
--- Speeds up active session lookups per user
+-- SESSIONS
 CREATE INDEX IF NOT EXISTS idx_sessions_user_status
-    ON sessions(user_id, sta_tus);
+    ON sessions(user_id, status);
 
--- Speeds up flagged + status combo used in threat views
 CREATE INDEX IF NOT EXISTS idx_sessions_flagged_status
-    ON sessions(is_flagged, sta_tus);
+    ON sessions(is_flagged, status);
 
 
--- ── ALERTS ────────────────────────────────────────────────────
-
--- Speeds up JOIN from events to alerts
+-- ALERTS
 CREATE INDEX IF NOT EXISTS idx_alerts_event_id
     ON alerts(event_id);
 
--- Speeds up status filter on alerts table
 CREATE INDEX IF NOT EXISTS idx_alerts_status
-    ON alerts(sta_tus);
+    ON alerts(status);
 
 
--- ── ROLE PERMISSIONS ──────────────────────────────────────────
-
--- Speeds up role-based permission lookups
+-- ROLE PERMISSIONS
 CREATE INDEX IF NOT EXISTS idx_role_permissions_role
     ON role_permissions(role_id);
