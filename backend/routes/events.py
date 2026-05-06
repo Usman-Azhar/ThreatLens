@@ -1,10 +1,10 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify 
 from db import query
 
 events_bp = Blueprint("events", __name__)
 
 
-# GET /api/events?org_id=1
+# get events, filter by org if given
 @events_bp.route("/", methods=["GET"])
 def get_events():
     org_id = request.args.get("org_id")
@@ -30,7 +30,7 @@ def get_events():
     return jsonify([dict(r) for r in rows])
 
 
-# GET /api/events/alerts?org_id=1
+# get alerts, filter by org if given
 @events_bp.route("/alerts", methods=["GET"])
 def get_alerts():
     org_id = request.args.get("org_id")
@@ -56,7 +56,7 @@ def get_alerts():
     return jsonify([dict(r) for r in rows])
 
 
-# PATCH /api/events/alerts/<id>
+# update alert status
 @events_bp.route("/alerts/<int:alert_id>", methods=["PATCH"])
 def update_alert(alert_id):
     data = request.get_json()
@@ -67,7 +67,7 @@ def update_alert(alert_id):
     return jsonify({"message": "Alert updated"})
 
 
-# GET /api/events/stats?org_id=1
+# get stats data for dashboard
 @events_bp.route("/stats", methods=["GET"])
 def get_stats():
     org_id = request.args.get("org_id")
@@ -106,7 +106,7 @@ def get_stats():
     })
 
 
-# POST /api/events/log
+# log a new event
 @events_bp.route("/log", methods=["POST"])
 def log_event():
     data       = request.get_json()
@@ -127,6 +127,7 @@ def log_event():
     )
     event_id = row[0]["event_id"]
 
+    # check privilege escalation on page access
     if event_type == "page_access" and role_id is not None:
         from routes.threat_check import check_privilege_escalation
         check_privilege_escalation(user_id, asset_id, event_id, role_id)
