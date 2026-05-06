@@ -44,7 +44,8 @@ CREATE TABLE users (
     username      VARCHAR(100) NOT NULL UNIQUE,
     email         VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
-    created_at    TIMESTAMP    DEFAULT NOW()
+    -- created_at    TIMESTAMP    DEFAULT NOW(),
+    is_active      BOOLEAN      DEFAULT TRUE
 );
 
 
@@ -147,3 +148,5 @@ CREATE TABLE login_attempts (
     success      BOOLEAN   NOT NULL,
     user_agent   VARCHAR(255)
 );
+
+ALTER TABLE users ADD COLUMN is_active BOOLEAN DEFAULT TRUE;

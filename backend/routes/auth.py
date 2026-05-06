@@ -25,9 +25,8 @@ def login():
     ip = request.remote_addr
     device = request.headers.get("User-Agent", "Unknown")
 
-    # check if user exists
     rows = query(
-        "SELECT * FROM users WHERE username = %s",
+        "SELECT * FROM users WHERE username = %s AND is_active = TRUE",
         (username,)
     )
 
@@ -36,20 +35,17 @@ def login():
 
     user = rows[0]
 
-    # grab the web app asset for this user's org (needed for event logging)
     asset_rows = query(
         "SELECT asset_id FROM assets WHERE org_id = %s AND asset_type = 'Web Application' LIMIT 1",
         (user["org_id"],)
     )
     asset_id = asset_rows[0]["asset_id"] if asset_rows else 1
 
-    # verify password
     try:
         password_valid = bcrypt.checkpw(password.encode(), user["password_hash"].encode())
     except ValueError:
         return render_template("login.html", error="Invalid credentials")
 
-    # wrong password — log the failed attempt and bail
     if not password_valid:
         query(
             """INSERT INTO events
@@ -59,10 +55,8 @@ def login():
         )
         return render_template("login.html", error="Invalid credentials")
 
-    # password is good — generate session token
     token = secrets.token_hex(32)
 
-    # create the session in DB
     session_rows = query(
         """INSERT INTO sessions
            (user_id, org_id, session_token, ip_address, device_info, login_time, sta_tus)
@@ -73,7 +67,6 @@ def login():
 
     session_id = session_rows[0]["session_id"]
 
-    # log the successful login as an event
     event_rows = query(
         """INSERT INTO events
            (event_type, user_id, session_id, ip_address, success, asset_id)
@@ -84,12 +77,10 @@ def login():
 
     event_id = event_rows[0]["event_id"]
 
-    # run threat checks against this login
     check_suspicious_ip(user["user_id"], ip, session_id, event_id)
     check_off_hours(user["user_id"], event_id, datetime.now())
     check_concurrent_session(user["user_id"], ip, event_id)
 
-    # redirect based on role — 1: admin, 2: analyst, else: regular user
     if user["role_id"] == 1:
         redirect_url = "/sessions"
     elif user["role_id"] == 2:
@@ -106,7 +97,6 @@ def login():
 def logout():
     token = request.cookies.get("session_token")
 
-    # expire the session in DB if token exists
     if token:
         query(
             """UPDATE sessions
