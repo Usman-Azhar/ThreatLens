@@ -1,5 +1,3 @@
--- test data
-
 TRUNCATE organizations RESTART IDENTITY CASCADE;
 
 INSERT INTO organizations (org_name, created_at) VALUES

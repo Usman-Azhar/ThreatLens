@@ -144,3 +144,68 @@ def welcome_page():
     return render_template("welcome.html",
         username=user["username"],
         org_name=user["org_name"])
+
+
+# ── USER MANAGEMENT (Admin only) ─────────────────────────────────────────────
+
+@pages_bp.route("/users")
+def users_page():
+    token = request.cookies.get("session_token")
+    if not token:
+        return redirect("/auth/login")
+    user = get_current_user(token)
+    if not user:
+        return redirect("/auth/login")
+    if user["role_id"] != 1:
+        log_unauthorized(user, "/users")
+        return redirect("/welcome")
+    rows = query("""
+        SELECT u.user_id, u.username, u.email, u.role_id, r.role_name,
+               u.created_at, u.is_active
+        FROM users u
+        JOIN roles r ON u.role_id = r.role_id
+        WHERE u.org_id = %s
+        ORDER BY u.user_id
+    """, (user["org_id"],))
+    roles = query("SELECT role_id, role_name FROM roles ORDER BY role_id")
+    return render_template("users.html", users=rows, roles=roles,
+                           role_id=user["role_id"], current_user_id=user["user_id"])
+
+
+@pages_bp.route("/users/<int:target_id>/role", methods=["POST"])
+def change_role(target_id):
+    token = request.cookies.get("session_token")
+    if not token:
+        return redirect("/auth/login")
+    user = get_current_user(token)
+    if not user or user["role_id"] != 1:
+        return redirect("/welcome")
+    new_role = request.form.get("role_id")
+    if new_role not in ("1", "2", "3"):
+        return redirect("/users")
+    # Admin cannot change their own role
+    if target_id == user["user_id"]:
+        return redirect("/users")
+    query("""
+        UPDATE users SET role_id = %s
+        WHERE user_id = %s AND org_id = %s
+    """, (new_role, target_id, user["org_id"]))
+    return redirect("/users")
+
+
+@pages_bp.route("/users/<int:target_id>/toggle", methods=["POST"])
+def toggle_user(target_id):
+    token = request.cookies.get("session_token")
+    if not token:
+        return redirect("/auth/login")
+    user = get_current_user(token)
+    if not user or user["role_id"] != 1:
+        return redirect("/welcome")
+    # Admin cannot deactivate themselves
+    if target_id == user["user_id"]:
+        return redirect("/users")
+    query("""
+        UPDATE users SET is_active = NOT is_active
+        WHERE user_id = %s AND org_id = %s
+    """, (target_id, user["org_id"]))
+    return redirect("/users")

@@ -1,12 +1,5 @@
--- =============================================================
--- queries.sql
--- ThreatLens — Security Analysis Queries
--- Run these manually in pgAdmin to investigate threats
--- =============================================================
-
-
--- ── QUERY 1: Brute Force Detection ───────────────────────────
--- Users with 5+ failed logins within a 15-minute window.
+-- QUERY 1: Brute Force Detection
+-- find users with many failed logins in 15 mins time
 
 SELECT
     u.username,
@@ -21,10 +14,8 @@ GROUP BY u.username, e.ip_address, DATE_TRUNC('hour', e.times_tamp)
 HAVING COUNT(*) >= 5
    AND MAX(e.times_tamp) - MIN(e.times_tamp) <= INTERVAL '15 minutes';
 
-
--- ── QUERY 2: Suspicious IP Logins ────────────────────────────
--- Events where the IP matches a known malicious entry
--- in threat_intelligence.
+-- QUERY 2: Suspicious IP Logins
+-- get events where IP is in threat_intelligence
 
 SELECT
     u.username,
@@ -37,9 +28,8 @@ JOIN users u ON e.user_id = u.user_id
 JOIN threat_intelligence t ON e.ip_address::text = t.value
 ORDER BY e.times_tamp DESC;
 
-
--- ── QUERY 3: Off-Hours Logins ─────────────────────────────────
--- Logins that occurred between 2am and 5am.
+-- QUERY 3: Off-Hours Logins
+-- logins between 2am and 5am
 
 SELECT
     u.username,
@@ -52,9 +42,8 @@ WHERE EXTRACT(HOUR FROM e.times_tamp) >= 2
   AND EXTRACT(HOUR FROM e.times_tamp) <  5
 ORDER BY e.times_tamp DESC;
 
-
--- ── QUERY 4: Privilege Escalation ────────────────────────────
--- Non-admin users who accessed an Admin_Panel asset.
+-- QUERY 4: Privilege Escalation
+-- non admin users accessing admin panel
 
 SELECT
     u.username,
@@ -71,9 +60,8 @@ WHERE a.asset_type = 'Admin_Panel'
   AND r.role_name  != 'Admin'
 ORDER BY e.times_tamp DESC;
 
-
--- ── QUERY 5: Concurrent Sessions ─────────────────────────────
--- Users with active sessions from more than one IP address.
+-- QUERY 5: Concurrent Sessions
+-- users logged in from multiple IPs
 
 SELECT
     u.username,
