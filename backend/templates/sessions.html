@@ -41,14 +41,13 @@
   .nav-logo span{color:var(--accent);}
   .logo-dot{width:7px;height:7px;background:var(--accent);border-radius:50%;
     animation:pulse 2s infinite;}
-  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(106,158,127,0.3);}50%{box-shadow:0 0 0 5px rgba(106,158,127,0);}}50%{box-shadow:0 0 0 6px rgba(0,255,157,0);}}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(106,158,127,0.3);}50%{box-shadow:0 0 0 5px rgba(106,158,127,0);}}
   .nav-links{display:flex;gap:0.5rem;align-items:center;}
   .nav-links a{font-family:'Exo 2',sans-serif;font-weight:400;font-size:0.8rem;
     letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;
     color:var(--text-dim);padding:6px 14px;border:1px solid transparent;border-radius:3px;transition:all 0.2s;}
   .nav-links a:hover,.nav-links a.active{color:var(--accent);border-color:var(--border);
     background:rgba(106,158,127,0.08);}
-  .nav-logout{}
   .nav-logout form button{
     font-family:'Exo 2',sans-serif;font-weight:400;font-size:0.8rem;letter-spacing:0.5px;text-transform:uppercase;background:transparent;
     border:1px solid var(--danger);color:var(--danger);
@@ -117,6 +116,12 @@
   .kpi.kpi-warn .kpi-val{color:var(--warn);}
   .kpi .kpi-lbl{font-family:'Exo 2',sans-serif;font-size:0.75rem;
     letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-top:2px;}
+
+  /* TERMINATE BUTTON */
+  .btn-terminate{background:transparent;border:1px solid var(--danger);color:var(--danger);
+    font-family:'Exo 2',sans-serif;font-size:0.75rem;letter-spacing:1px;text-transform:uppercase;
+    padding:4px 12px;border-radius:3px;cursor:pointer;transition:all 0.2s;}
+  .btn-terminate:hover{background:rgba(192,57,43,0.15);}
 
   /* EMPTY STATE */
   .empty{text-align:center;padding:3rem;color:var(--text-dim);
@@ -217,9 +222,16 @@
               <span style="color:var(--text-dim);font-size:0.8rem;">—</span>
             {% endif %}
           </td>
+          <td>
+            {% if s.sta_tus in ["Active", "Suspicious"] %}
+              <button class="btn-terminate" onclick="terminateSession('{{ s.session_id }}')">Terminate</button>
+            {% else %}
+              <span style="color:var(--text-dim);font-size:0.8rem;">—</span>
+            {% endif %}
+          </td>
         </tr>
         {% else %}
-        <tr><td colspan="8"><div class="empty">// No sessions found</div></td></tr>
+        <tr><td colspan="9"><div class="empty">// No sessions found</div></td></tr>
         {% endfor %}
       </tbody>
     </table>
@@ -235,6 +247,17 @@
   setInterval(function () {
     fetch("/api/sessions/heartbeat", { method: "POST" });
   }, 120000);
+</script>
+<script>
+  function terminateSession(sessionId) {
+    if (!confirm("Terminate session " + sessionId + "?")) return;
+    fetch("/api/sessions/" + sessionId + "/terminate", { method: "POST" })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.status === "terminated") location.reload();
+        else alert("Error: " + (data.error || "Unknown error"));
+      });
+  }
 </script>
 </body>
 </html>
