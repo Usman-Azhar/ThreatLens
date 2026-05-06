@@ -53,19 +53,24 @@ def get_flagged():
     return jsonify([dict(r) for r in rows])
 
 
-# ── TASK 1: POST /api/sessions/heartbeat ─────────────────────────────────────
-# Updates last_active for the current session cookie every 2 minutes.
-# Called silently by the JS setInterval in sessions.html.
+# POST /api/sessions/heartbeat
 @sessions_bp.route("/heartbeat", methods=["POST"])
 def heartbeat():
     token = request.cookies.get("session_token")
     if token:
+        rows = query(
+            "SELECT sta_tus FROM sessions WHERE session_token = %s",
+            (token,)
+        )
+        if not rows or rows[0]["sta_tus"] not in ("Active", "Suspicious"):
+            return jsonify({"status": "terminated"}), 401
         query(
             "UPDATE sessions SET last_active = NOW() "
             "WHERE session_token = %s AND sta_tus = 'Active'",
             (token,),
         )
     return jsonify({"status": "ok"})
+
 
 # POST /api/sessions/<session_id>/terminate
 @sessions_bp.route("/<int:session_id>/terminate", methods=["POST"])
@@ -74,7 +79,6 @@ def terminate_session(session_id):
     from db import get_current_user
     user = get_current_user(token)
 
-    # Only admins (role_id == 1) can terminate sessions
     if not user or user["role_id"] != 1:
         return jsonify({"error": "Unauthorized"}), 403
 
@@ -87,12 +91,15 @@ def terminate_session(session_id):
         LIMIT 1
     """, (session_id,))
 
-    if not rows:
-        return jsonify({"error": "No alert found for this session"}), 404
-
-    alert_id = rows[0]["alert_id"]
-
-    # Call the stored procedure
-    query("CALL resolve_alert(%s, %s)", (alert_id, user["user_id"]))
+    if rows:
+        # Call the stored procedure (resolves alert + terminates session)
+        alert_id = rows[0]["alert_id"]
+        query("CALL resolve_alert(%s, %s)", (alert_id, user["user_id"]))
+    else:
+        # No linked alert — terminate session directly
+        query(
+            "UPDATE sessions SET sta_tus = 'Terminated' WHERE session_id = %s",
+            (session_id,)
+        )
 
     return jsonify({"status": "terminated"})
