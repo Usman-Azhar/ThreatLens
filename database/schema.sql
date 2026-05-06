@@ -1,10 +1,8 @@
--- =============================================================
--- schema.sql
--- ThreatLens — Full Database Schema
--- Run this ONCE to create all tables from scratch
--- =============================================================
 
--- ── DROP ORDER (reverse FK dependency) ───────────────────────
+-- schemas
+
+
+-- DROP Tables
 DROP TABLE IF EXISTS login_attempts    CASCADE;
 DROP TABLE IF EXISTS role_permissions  CASCADE;
 DROP TABLE IF EXISTS audit_log         CASCADE;
@@ -18,7 +16,7 @@ DROP TABLE IF EXISTS threat_intelligence CASCADE;
 DROP TABLE IF EXISTS organizations     CASCADE;
 
 
--- ── ORGANIZATIONS ─────────────────────────────────────────────
+-- ── ORGANIZATIONS 
 CREATE TABLE organizations (
     org_id     SERIAL      PRIMARY KEY,
     org_name   VARCHAR(250),
