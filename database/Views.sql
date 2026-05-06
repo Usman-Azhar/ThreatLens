@@ -1,12 +1,11 @@
--- =============================================================
--- views.sql
--- ThreatLens — All Views
+
+-- views
 
 
 
--- ── VIEW 1: vw_alert_summary ──────────────────────────────────
--- All alerts joined with their event and user info.
--- Used for quick alert investigation without manual joins.
+
+-- View 1: vw_alert_summary
+-- All alerts are joined with their respecitve event and user info.
 
 CREATE OR REPLACE VIEW vw_alert_summary AS
 SELECT
@@ -16,6 +15,7 @@ SELECT
     a.sta_tus,
     a.created_at,
     u.username,
+    u.org_id,
     e.event_type,
     e.ip_address,
     e.times_tamp
@@ -24,9 +24,8 @@ JOIN events e ON a.event_id = e.event_id
 JOIN users  u ON e.user_id  = u.user_id;
 
 
--- ── VIEW 2: vw_active_threats ─────────────────────────────────
--- All sessions where the session IP matches a known threat.
--- Directly shows which active sessions are from malicious IPs.
+-- View 2: vw_active_threats
+-- Directly shows all the active sessions where the session IP matches a known threat that we declared in the seed data.
 
 CREATE OR REPLACE VIEW vw_active_threats AS
 SELECT
@@ -42,9 +41,8 @@ JOIN users u ON s.user_id = u.user_id
 JOIN threat_intelligence t ON s.ip_address::text = t.value;
 
 
--- ── VIEW 3: vw_user_activity ──────────────────────────────────
--- Per-user event count summary grouped by event type.
--- Shows what each user has been doing and when they were last seen.
+-- VIEW 3: vw_user_activity
+-- Per user event count which is grouped by event type and shows what each user has been doing and when they were last seen.
 
 CREATE OR REPLACE VIEW vw_user_activity AS
 SELECT
@@ -57,7 +55,7 @@ JOIN users u ON e.user_id = u.user_id
 GROUP BY u.username, e.event_type;
 
 
--- ── VIEW 4: vw_brute_force_summary ───────────────────────────
+-- View 4: vw_brute_force_summary
 -- Users with 5+ failed logins within a 15-minute window.
 -- Reusable version of the brute force query from queries.sql.
 
@@ -76,7 +74,7 @@ HAVING COUNT(*) >= 5
    AND MAX(e.times_tamp) - MIN(e.times_tamp) <= INTERVAL '15 minutes';
 
 
--- ── VIEW 5: vw_role_access_matrix ────────────────────────────
+-- View 5: vw_role_access_matrix 
 -- Shows every role and its permissions from role_permissions.
 -- Demonstrates 3NF: permissions are structured and queryable,
 -- not a TEXT blob inside the roles table.

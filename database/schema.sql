@@ -16,7 +16,7 @@ DROP TABLE IF EXISTS threat_intelligence CASCADE;
 DROP TABLE IF EXISTS organizations     CASCADE;
 
 
--- ── ORGANIZATIONS 
+-- Organizations
 CREATE TABLE organizations (
     org_id     SERIAL      PRIMARY KEY,
     org_name   VARCHAR(250),
@@ -24,9 +24,7 @@ CREATE TABLE organizations (
 );
 
 
--- ── ROLES ─────────────────────────────────────────────────────
--- permissions column kept for legacy reference only.
--- Actual permissions live in role_permissions (3NF).
+-- Roles
 CREATE TABLE roles (
     role_id     SERIAL       PRIMARY KEY,
     role_name   VARCHAR(50)  NOT NULL,
@@ -34,7 +32,7 @@ CREATE TABLE roles (
 );
 
 
--- ── USERS ─────────────────────────────────────────────────────
+-- Users
 CREATE TABLE users (
     user_id       SERIAL       PRIMARY KEY,
     org_id        INT          NOT NULL REFERENCES organizations(org_id),
@@ -42,12 +40,12 @@ CREATE TABLE users (
     username      VARCHAR(100) NOT NULL UNIQUE,
     email         VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
-    -- created_at    TIMESTAMP    DEFAULT NOW(),
+    created_at    TIMESTAMP    DEFAULT NOW(),
     is_active      BOOLEAN      DEFAULT TRUE
 );
 
 
--- ── ASSETS ────────────────────────────────────────────────────
+-- Assets
 CREATE TABLE assets (
     asset_id   SERIAL       PRIMARY KEY,
     org_id     INT          REFERENCES organizations(org_id),
@@ -56,7 +54,7 @@ CREATE TABLE assets (
 );
 
 
--- ── SESSIONS ──────────────────────────────────────────────────
+-- Sessions
 CREATE TABLE sessions (
     session_id    SERIAL       PRIMARY KEY,
     user_id       INT          NOT NULL REFERENCES users(user_id),
@@ -73,9 +71,7 @@ CREATE TABLE sessions (
 );
 
 
--- ── EVENTS ────────────────────────────────────────────────────
--- session_id is nullable: login_failed events exist before a session is created.
--- asset_id is nullable: if an asset is deleted, the forensic record is preserved.
+-- Events
 CREATE TABLE events (
     event_id   SERIAL       PRIMARY KEY,
     user_id    INT          NOT NULL REFERENCES users(user_id),
@@ -89,11 +85,10 @@ CREATE TABLE events (
 );
 
 
--- ── ALERTS ────────────────────────────────────────────────────
--- Cascades on event delete: no orphan alerts.
+-- Alerts
 CREATE TABLE alerts (
     alert_id   SERIAL       PRIMARY KEY,
-    event_id   INT          NOT NULL REFERENCES events(event_id) ON DELETE CASCADE,
+    event_id   INT          NOT NULL REFERENCES events(event_id) ON DELETE CASCADE, 
     alert_type VARCHAR(100) NOT NULL,
     severity   VARCHAR(50)  CHECK (severity IN ('Low', 'Medium', 'High', 'Critical')),
     sta_tus    VARCHAR(50)  CHECK (sta_tus IN ('Open', 'Investigating', 'Resolved', 'False Positive')),
@@ -101,7 +96,7 @@ CREATE TABLE alerts (
 );
 
 
--- ── THREAT INTELLIGENCE ───────────────────────────────────────
+-- Threat Intelligence
 CREATE TABLE threat_intelligence (
     threat_id    SERIAL       PRIMARY KEY,
     threat_type  VARCHAR(100),
@@ -110,9 +105,7 @@ CREATE TABLE threat_intelligence (
 );
 
 
--- ── AUDIT LOG ─────────────────────────────────────────────────
--- Populated automatically by trg_audit_alert_status trigger.
--- Tracks every alert status change without any app code.
+-- Audit Log
 CREATE TABLE audit_log (
     log_id     SERIAL       PRIMARY KEY,
     table_name VARCHAR(100) NOT NULL,
@@ -124,7 +117,7 @@ CREATE TABLE audit_log (
 );
 
 
--- ── ROLE PERMISSIONS ──────────────────────────────────────────
+-- Role Permissions
 -- Normalizes permissions out of roles.permissions TEXT column.
 -- 3NF: a role has many permissions, a permission belongs to many roles.
 CREATE TABLE role_permissions (
@@ -135,9 +128,7 @@ CREATE TABLE role_permissions (
 );
 
 
--- ── LOGIN ATTEMPTS ────────────────────────────────────────────
--- Dedicated auth tracking table, separate from general events.
--- Populated automatically by trg_sync_login_attempts trigger.
+-- Login Attempts
 CREATE TABLE login_attempts (
     attempt_id   SERIAL    PRIMARY KEY,
     user_id      INT       REFERENCES users(user_id) ON DELETE SET NULL,
@@ -146,5 +137,3 @@ CREATE TABLE login_attempts (
     success      BOOLEAN   NOT NULL,
     user_agent   VARCHAR(255)
 );
-
-ALTER TABLE users ADD COLUMN is_active BOOLEAN DEFAULT TRUE;
