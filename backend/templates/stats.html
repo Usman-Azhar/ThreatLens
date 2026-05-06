@@ -191,6 +191,36 @@
     </div>
     <canvas id="chartTypes" height="120"></canvas>
   </div>
+    <!-- Brute Force Summary -->
+  <div style="margin-top:1.5rem;">
+    <div style="font-family:'Exo 2',sans-serif;font-size:0.85rem;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:1rem;">// Brute Force Attempts</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>IP Address</th>
+            <th>Failed Attempts</th>
+            <th>First Attempt</th>
+            <th>Last Attempt</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in brute_force %}
+          <tr>
+            <td>{{ row.username }}</td>
+            <td class="mono">{{ row.ip_address }}</td>
+            <td class="mono" style="color:var(--danger);">{{ row.failed_attempts }}</td>
+            <td class="mono">{{ row.first_attempt }}</td>
+            <td class="mono">{{ row.last_attempt }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="5"><div class="empty">// No brute force attempts detected</div></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>

@@ -31,6 +31,7 @@ CREATE OR REPLACE VIEW vw_active_threats AS
 SELECT
     s.session_id,
     u.username,
+    u.org_id,
     s.ip_address,
     s.sta_tus,
     s.is_flagged,
@@ -62,6 +63,7 @@ GROUP BY u.username, e.event_type;
 CREATE OR REPLACE VIEW vw_brute_force_summary AS
 SELECT
     u.username,
+    u.org_id,
     e.ip_address::text,
     COUNT(*)           AS failed_attempts,
     MIN(e.times_tamp)  AS first_attempt,

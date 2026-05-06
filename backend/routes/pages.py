@@ -40,6 +40,7 @@ def sessions_page():
     return render_template("sessions.html", sessions=rows, role_id=user["role_id"])
 
 
+
 @pages_bp.route("/events")
 def events_page():
     token = request.cookies.get("session_token")
@@ -75,14 +76,11 @@ def alerts_page():
         log_unauthorized(user, "/alerts")
         return redirect("/welcome")
     rows = query("""
-        SELECT al.alert_id, al.alert_type, al.severity, al.sta_tus,
-               al.created_at, e.event_type, u.username, e.ip_address
-        FROM alerts al
-        JOIN events e ON al.event_id = e.event_id
-        JOIN users u  ON e.user_id   = u.user_id
-        WHERE u.org_id = %s
-        ORDER BY al.created_at DESC
-    """, (user["org_id"],))
+        SELECT *
+        FROM vw_alert_summary
+        WHERE org_id = %s
+        ORDER BY created_at DESC
+""", (user["org_id"],))
     return render_template("alerts.html", alerts=rows, role_id=user["role_id"])
 
 
@@ -126,10 +124,18 @@ def stats_page():
         GROUP BY al.alert_type
     """, (org_id,))
 
+    brute_force = query("""
+        SELECT *
+        FROM vw_brute_force_summary
+        WHERE org_id = %s
+        ORDER BY last_attempt DESC
+    """, (org_id,))
+
     return render_template("stats.html",
         events_per_day=events_per_day,
         severity_breakdown=severity_breakdown,
         alert_types=alert_types,
+        brute_force=brute_force,
         role_id=user["role_id"])
 
 

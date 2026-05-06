@@ -137,3 +137,5 @@ CREATE TABLE login_attempts (
     success      BOOLEAN   NOT NULL,
     user_agent   VARCHAR(255)
 );
+
+ALTER TABLE users ADD COLUMN is_active BOOLEAN NOT NULL DEFAULT TRUE;
