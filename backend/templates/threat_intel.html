@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>ThreatLens — User Management</title>
+<title>ThreatLens — Threat Intelligence</title>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet"/>
 <style>
   :root {
@@ -65,15 +65,35 @@
     padding:1.1rem 1.4rem;position:relative;overflow:hidden;}
   .kpi::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
   .kpi.kpi-blue::after{background:var(--accent);}
-  .kpi.kpi-green::after{background:var(--accent2);}
   .kpi.kpi-red::after{background:var(--danger);}
   .kpi.kpi-warn::after{background:var(--warn);}
+  .kpi.kpi-dim::after{background:var(--text-dim);}
   .kpi .kpi-val{font-family:'Share Tech Mono',monospace;font-size:1.8rem;color:var(--accent);}
-  .kpi.kpi-green .kpi-val{color:var(--accent2);}
   .kpi.kpi-red .kpi-val{color:var(--danger);}
   .kpi.kpi-warn .kpi-val{color:var(--warn);}
+  .kpi.kpi-dim .kpi-val{color:var(--text-dim);}
   .kpi .kpi-lbl{font-family:'Exo 2',sans-serif;font-size:0.75rem;
     letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-top:2px;}
+
+  /* ADD FORM */
+  .add-form{background:var(--panel);border:1px solid var(--border);border-radius:6px;
+    padding:1.4rem 1.6rem;margin-bottom:1.5rem;}
+  .add-form-title{font-family:'Exo 2',sans-serif;font-size:0.8rem;letter-spacing:2px;
+    text-transform:uppercase;color:var(--text-dim);margin-bottom:1rem;}
+  .add-form-row{display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;}
+  .form-select{background:var(--bg2);border:1px solid var(--border);color:var(--text);
+    padding:8px 12px;border-radius:3px;font-family:'Share Tech Mono',monospace;font-size:0.8rem;
+    cursor:pointer;outline:none;min-width:160px;}
+  .form-select:focus{border-color:var(--accent);}
+  .form-input{background:var(--bg2);border:1px solid var(--border);color:var(--text);
+    padding:8px 12px;border-radius:3px;font-family:'Share Tech Mono',monospace;font-size:0.8rem;
+    outline:none;flex:1;min-width:200px;}
+  .form-input:focus{border-color:var(--accent);}
+  .form-input::placeholder{color:var(--text-dim);}
+  .btn-add{background:rgba(106,158,127,0.1);border:1px solid var(--accent);color:var(--accent);
+    padding:8px 20px;border-radius:3px;font-family:'Exo 2',sans-serif;font-size:0.8rem;
+    font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all 0.2s;}
+  .btn-add:hover{background:rgba(106,158,127,0.2);box-shadow:var(--glow);}
 
   /* TABLE */
   .table-wrap{background:var(--panel);border:1px solid var(--border);border-radius:6px;overflow:hidden;}
@@ -83,41 +103,21 @@
     padding:12px 16px;text-align:left;border-bottom:1px solid var(--border);}
   tbody tr{border-bottom:1px solid rgba(14,58,82,0.5);transition:background 0.15s;}
   tbody tr:hover{background:rgba(0,200,255,0.04);}
-  tbody tr.inactive-row{opacity:0.45;}
   tbody td{padding:11px 16px;font-size:0.9rem;font-family:'Exo 2',sans-serif;color:var(--text);}
   .mono{font-family:'Share Tech Mono',monospace;font-size:0.8rem;color:var(--text-dim);}
 
   /* BADGES */
   .badge{display:inline-block;padding:2px 10px;border-radius:2px;font-family:'Exo 2',sans-serif;
     font-weight:700;font-size:0.75rem;letter-spacing:1px;text-transform:uppercase;}
-  .badge-admin{background:rgba(106,158,127,0.15);color:var(--accent);border:1px solid rgba(106,158,127,0.3);}
-  .badge-analyst{background:rgba(176,125,42,0.12);color:var(--warn);border:1px solid rgba(176,125,42,0.3);}
-  .badge-viewer{background:rgba(74,122,148,0.1);color:var(--text-dim);border:1px solid rgba(74,122,148,0.2);}
-  .badge-active{background:rgba(0,255,157,0.08);color:var(--accent2);border:1px solid rgba(0,255,157,0.2);}
-  .badge-inactive{background:rgba(255,59,92,0.12);color:var(--danger);border:1px solid rgba(255,59,92,0.25);}
-  .badge-you{background:rgba(106,158,127,0.1);color:var(--accent);border:1px solid rgba(106,158,127,0.2);
-    font-size:0.65rem;padding:1px 6px;margin-left:6px;vertical-align:middle;}
+  .badge-malicious{background:rgba(192,57,43,0.15);color:var(--danger);border:1px solid rgba(192,57,43,0.3);}
+  .badge-tor{background:rgba(176,125,42,0.12);color:var(--warn);border:1px solid rgba(176,125,42,0.3);}
+  .badge-attacker{background:rgba(106,158,127,0.12);color:var(--accent);border:1px solid rgba(106,158,127,0.3);}
 
-  /* CONTROLS */
-  .role-select{background:var(--bg2);border:1px solid var(--border);color:var(--text);
-    padding:4px 8px;border-radius:3px;font-family:'Share Tech Mono',monospace;font-size:0.75rem;
-    cursor:pointer;outline:none;}
-  .role-select:focus{border-color:var(--accent);}
-  .btn-apply{background:transparent;border:1px solid var(--accent);color:var(--accent);
+  /* DELETE BUTTON */
+  .btn-delete{background:transparent;border:1px solid var(--danger);color:var(--danger);
     padding:4px 10px;border-radius:3px;font-family:'Exo 2',sans-serif;font-size:0.75rem;
     letter-spacing:0.5px;cursor:pointer;transition:all 0.2s;}
-  .btn-apply:hover{background:rgba(106,158,127,0.1);}
-  .btn-deactivate{background:transparent;border:1px solid var(--danger);color:var(--danger);
-    padding:4px 10px;border-radius:3px;font-family:'Exo 2',sans-serif;font-size:0.75rem;
-    letter-spacing:0.5px;cursor:pointer;transition:all 0.2s;}
-  .btn-deactivate:hover{background:rgba(192,57,43,0.1);}
-  .btn-activate{background:transparent;border:1px solid var(--accent2);color:var(--accent2);
-    padding:4px 10px;border-radius:3px;font-family:'Exo 2',sans-serif;font-size:0.75rem;
-    letter-spacing:0.5px;cursor:pointer;transition:all 0.2s;}
-  .btn-activate:hover{background:rgba(77,122,97,0.1);}
-  .btn-disabled{background:transparent;border:1px solid var(--border);color:var(--text-dim);
-    padding:4px 10px;border-radius:3px;font-family:'Exo 2',sans-serif;font-size:0.75rem;
-    letter-spacing:0.5px;cursor:not-allowed;opacity:0.4;}
+  .btn-delete:hover{background:rgba(192,57,43,0.1);}
 
   /* EMPTY */
   .empty{text-align:center;padding:3rem;color:var(--text-dim);
@@ -132,11 +132,11 @@
   <div class="nav-logo"><div class="logo-dot"></div>Threat<span>Lens</span></div>
   <div class="nav-links">
     <a href="/sessions">Sessions</a>
-    <a href="/users" class="active">Users</a>
-    <a href="/threat-intel">Threat Intel</a>
     <a href="/events">Events</a>
     <a href="/alerts">Alerts</a>
     <a href="/stats">Stats</a>
+    <a href="/users">Users</a>
+    <a href="/threat-intel" class="active">Threat Intel</a>
   </div>
   <div class="nav-logout">
     <form action="/auth/logout" method="POST">
@@ -148,109 +148,84 @@
 <div class="main">
   <div class="page-header">
     <div class="page-title">
-      // User Management
-      <span>Manage roles and account status within your organization</span>
+      // Threat Intelligence
+      <span>Manage malicious IPs, TOR exit nodes, and known attackers</span>
     </div>
   </div>
 
   <!-- KPI strip -->
   <div class="kpi-strip">
     <div class="kpi kpi-blue">
-      <div class="kpi-val">{{ users | length }}</div>
-      <div class="kpi-lbl">Total Users</div>
-    </div>
-    <div class="kpi kpi-green">
-      <div class="kpi-val">{{ users | selectattr("is_active") | list | length }}</div>
-      <div class="kpi-lbl">Active</div>
+      <div class="kpi-val">{{ threats | length }}</div>
+      <div class="kpi-lbl">Total Entries</div>
     </div>
     <div class="kpi kpi-red">
-      <div class="kpi-val">{{ users | rejectattr("is_active") | list | length }}</div>
-      <div class="kpi-lbl">Deactivated</div>
+      <div class="kpi-val">{{ threats | selectattr("threat_type", "equalto", "malicious_ip") | list | length }}</div>
+      <div class="kpi-lbl">Malicious IPs</div>
     </div>
     <div class="kpi kpi-warn">
-      <div class="kpi-val">{{ users | selectattr("role_id", "equalto", 1) | list | length }}</div>
-      <div class="kpi-lbl">Admins</div>
+      <div class="kpi-val">{{ threats | selectattr("threat_type", "equalto", "tor_exit_node") | list | length }}</div>
+      <div class="kpi-lbl">TOR Exit Nodes</div>
+    </div>
+    <div class="kpi kpi-dim">
+      <div class="kpi-val">{{ threats | selectattr("threat_type", "equalto", "known_attacker") | list | length }}</div>
+      <div class="kpi-lbl">Known Attackers</div>
     </div>
   </div>
 
+  <!-- Add form -->
+  <div class="add-form">
+    <div class="add-form-title">// Add New Entry</div>
+    <form action="/threat-intel/add" method="POST">
+      <div class="add-form-row">
+        <select name="threat_type" class="form-select" required>
+          <option value="malicious_ip">malicious_ip</option>
+          <option value="tor_exit_node">tor_exit_node</option>
+          <option value="known_attacker">known_attacker</option>
+        </select>
+        <input type="text" name="value" class="form-input"
+               placeholder="e.g. 192.168.1.100" required />
+        <button type="submit" class="btn-add">Add Entry</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Table -->
   <div class="table-wrap">
     <table>
       <thead>
         <tr>
           <th>#</th>
-          <th>Username</th>
-          <th>Email</th>
-          <th>Current Role</th>
-          <th>Status</th>
-          <th>Member Since</th>
-          <th>Change Role</th>
-          <th>Account</th>
+          <th>Type</th>
+          <th>Value (IP / Host)</th>
+          <th>Last Updated</th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody>
-        {% for u in users %}
-        <tr class="{{ 'inactive-row' if not u.is_active else '' }}">
-          <td class="mono">{{ u.user_id }}</td>
+        {% for t in threats %}
+        <tr>
+          <td class="mono">{{ t.threat_id }}</td>
           <td>
-            {{ u.username }}
-            {% if u.user_id == current_user_id %}
-              <span class="badge badge-you">YOU</span>
+            {% if t.threat_type == "malicious_ip" %}
+              <span class="badge badge-malicious">malicious_ip</span>
+            {% elif t.threat_type == "tor_exit_node" %}
+              <span class="badge badge-tor">tor_exit_node</span>
+            {% else %}
+              <span class="badge badge-attacker">known_attacker</span>
             {% endif %}
           </td>
-          <td class="mono">{{ u.email }}</td>
+          <td class="mono">{{ t.value }}</td>
+          <td class="mono">{{ t.last_updated }}</td>
           <td>
-            {% if u.role_name == "Admin" %}
-              <span class="badge badge-admin">Admin</span>
-            {% elif u.role_name == "Analyst" %}
-              <span class="badge badge-analyst">Analyst</span>
-            {% else %}
-              <span class="badge badge-viewer">Viewer</span>
-            {% endif %}
-          </td>
-          <td>
-            {% if u.is_active %}
-              <span class="badge badge-active">Active</span>
-            {% else %}
-              <span class="badge badge-inactive">Inactive</span>
-            {% endif %}
-          </td>
-          <td class="mono">{{ u.created_at.strftime('%Y-%m-%d') if u.created_at else '—' }}</td>
-
-          <!-- Change Role -->
-          <td>
-            {% if u.user_id == current_user_id %}
-              <span class="btn-disabled">Cannot change own role</span>
-            {% else %}
-              <form action="/users/{{ u.user_id }}/role" method="POST" style="display:flex;gap:6px;align-items:center;">
-                <select name="role_id" class="role-select">
-                  {% for r in roles %}
-                    <option value="{{ r.role_id }}" {{ 'selected' if r.role_id == u.role_id else '' }}>
-                      {{ r.role_name }}
-                    </option>
-                  {% endfor %}
-                </select>
-                <button type="submit" class="btn-apply">Apply</button>
-              </form>
-            {% endif %}
-          </td>
-
-          <!-- Activate / Deactivate -->
-          <td>
-            {% if u.user_id == current_user_id %}
-              <span class="btn-disabled">—</span>
-            {% else %}
-              <form action="/users/{{ u.user_id }}/toggle" method="POST">
-                {% if u.is_active %}
-                  <button type="submit" class="btn-deactivate">Deactivate</button>
-                {% else %}
-                  <button type="submit" class="btn-activate">Activate</button>
-                {% endif %}
-              </form>
-            {% endif %}
+            <form action="/threat-intel/{{ t.threat_id }}/delete" method="POST"
+                  onsubmit="return confirm('Remove {{ t.value }} from threat intelligence?')">
+              <button type="submit" class="btn-delete">Remove</button>
+            </form>
           </td>
         </tr>
         {% else %}
-        <tr><td colspan="8"><div class="empty">// No users found</div></td></tr>
+        <tr><td colspan="5"><div class="empty">// No threat intelligence entries</div></td></tr>
         {% endfor %}
       </tbody>
     </table>

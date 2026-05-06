@@ -209,3 +209,57 @@ def toggle_user(target_id):
         WHERE user_id = %s AND org_id = %s
     """, (target_id, user["org_id"]))
     return redirect("/users")
+
+
+# ── THREAT INTELLIGENCE MANAGEMENT (Admin only) ──────────────────────────────
+
+@pages_bp.route("/threat-intel")
+def threat_intel_page():
+    token = request.cookies.get("session_token")
+    if not token:
+        return redirect("/auth/login")
+    user = get_current_user(token)
+    if not user:
+        return redirect("/auth/login")
+    if user["role_id"] != 1:
+        log_unauthorized(user, "/threat-intel")
+        return redirect("/welcome")
+    rows = query("""
+        SELECT threat_id, threat_type, value, last_updated
+        FROM threat_intelligence
+        ORDER BY last_updated DESC
+    """)
+    return render_template("threat_intel.html", threats=rows, role_id=user["role_id"])
+
+
+@pages_bp.route("/threat-intel/add", methods=["POST"])
+def threat_intel_add():
+    token = request.cookies.get("session_token")
+    if not token:
+        return redirect("/auth/login")
+    user = get_current_user(token)
+    if not user or user["role_id"] != 1:
+        return redirect("/welcome")
+    threat_type = request.form.get("threat_type")
+    value       = request.form.get("value", "").strip()
+    if threat_type not in ("malicious_ip", "tor_exit_node", "known_attacker"):
+        return redirect("/threat-intel")
+    if not value:
+        return redirect("/threat-intel")
+    query("""
+        INSERT INTO threat_intelligence (threat_type, value, last_updated)
+        VALUES (%s, %s, NOW())
+    """, (threat_type, value))
+    return redirect("/threat-intel")
+
+
+@pages_bp.route("/threat-intel/<int:threat_id>/delete", methods=["POST"])
+def threat_intel_delete(threat_id):
+    token = request.cookies.get("session_token")
+    if not token:
+        return redirect("/auth/login")
+    user = get_current_user(token)
+    if not user or user["role_id"] != 1:
+        return redirect("/welcome")
+    query("DELETE FROM threat_intelligence WHERE threat_id = %s", (threat_id,))
+    return redirect("/threat-intel")
