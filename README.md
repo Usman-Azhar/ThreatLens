@@ -304,7 +304,7 @@ If we were to keep developing this, here's what we'd add:
 
 ## 👥 Meet the Team
 
-We're three CS students from GIKIST who built this together:
+We're three Cyber Security students from GIKI who built this together:
 
 <table>
 <tr>
