@@ -276,22 +276,16 @@ This project was developed collaboratively by three talented developers:
 <a href="https://github.com/Usman-Azhar">
 <img src="https://avatars.githubusercontent.com/u/190142643?v=4" width="100px;" alt="Usman Azhar"/><br />
 <sub><b>Usman Azhar</b></sub></a><br />
-<sub>58 commits</sub><br />
-<sup>Backend & Database Architecture</sup>
 </td>
 <td align="center">
 <a href="https://github.com/fatimaalli">
 <img src="https://avatars.githubusercontent.com/u/210160015?v=4" width="100px;" alt="Fatima Alli"/><br />
 <sub><b>Fatima Alli</b></sub></a><br />
-<sub>25 commits</sub><br />
-<sup>Frontend & UI/UX</sup>
 </td>
 <td align="center">
 <a href="https://github.com/GhostByte101">
 <img src="https://avatars.githubusercontent.com/u/205511354?v=4" width="100px;" alt="GhostByte101"/><br />
 <sub><b>GhostByte101</b></sub></a><br />
-<sub>21 commits</sub><br />
-<sup>Security & Testing</sup>
 </td>
 </tr>
 </table>
@@ -300,7 +294,7 @@ This project was developed collaboratively by three talented developers:
 
 ## ❤️ Credits
 
-**Project Type:** University DBMS (Database Management Systems) Capstone Project  
+**Project Type:** University DBMS (Database Management Systems) Semester Project  
 **Year:** 2025-2026  
 **Institution:** University Project
 
