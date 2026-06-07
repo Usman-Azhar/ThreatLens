@@ -27,7 +27,7 @@
 
 **ThreatLens** is a 4th-semester Database Management Systems (DBMS) capstone project from **Ghulam Ishaq Khan Institute of Engineering Sciences and Technology**. 
 
-We built this platform to explore how databases power real-world security applications. Instead of just studying theory, we designed a relational database system that actually detects threats, logs events, and manages users—exactly how enterprise security teams work.
+We built this platform to explore how databases power real-world security applications. Instead of just studying theory, we designed a relational database system that actually detects threats, logs security events, and identifies suspicious patterns—all managed through a backend API.
 
 This project combines database design principles, backend API development, and security best practices into one cohesive learning experience.
 
@@ -302,7 +302,7 @@ If we were to keep developing this, here's what we'd add:
 
 ---
 
-## Meet the Team
+## 👥 Meet the Team
 
 We're three Cyber Security students from GIKI who built this together:
 
@@ -310,18 +310,27 @@ We're three Cyber Security students from GIKI who built this together:
   <tr>
     <td align="center">
       <a href="https://github.com/Usman-Azhar">
-      <img src="https://avatars.githubusercontent.com/u/190142643?v=4" width="100px;" alt="Usman Azhar"/><br />
-      <sub><b>Usman Azhar</b></sub></a><br />
+        <img src="https://avatars.githubusercontent.com/u/190142643?v=4" width="100px;" alt="Usman Azhar"/><br/>
+        <b>Usman Azhar</b>
+      </a><br/>
+      <sub>Backend Development Lead</sub><br/>
+      <a href="https://github.com/Usman-Azhar">@Usman-Azhar</a>
     </td>
     <td align="center">
       <a href="https://github.com/fatimaalli">
-      <img src="https://avatars.githubusercontent.com/u/210160015?v=4" width="100px;" alt="Fatima Alli"/><br />
-      <sub><b>Fatima Alli</b></sub></a><br />  
+        <img src="https://avatars.githubusercontent.com/u/210160015?v=4" width="100px;" alt="Fatima Ali"/><br/>
+        <b>Fatima Ali</b>
+      </a><br/>
+      <sub>Database Design Lead</sub><br/>
+      <a href="https://github.com/fatimaalli">@FatimaAlli</a>
     </td>
     <td align="center">
       <a href="https://github.com/GhostByte101">
-      <img src="https://avatars.githubusercontent.com/u/205511354?v=4" width="100px;" alt="GhostByte101"/><br />
-      <sub><b>GhostByte101</b></sub></a><br />
+        <img src="https://avatars.githubusercontent.com/u/205511354?v=4" width="100px;" alt="Muhammad Abdullah"/><br/>
+        <b>Muhammad Abdullah</b>
+      </a><br/>
+      <sub>Security & Testing Lead</sub><br/>
+      <a href="https://github.com/GhostByte101">@GhostByte101</a>
     </td>
   </tr>
 </table>
