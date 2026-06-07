@@ -313,7 +313,6 @@ We're three Cyber Security students from GIKI who built this together:
         <img src="https://avatars.githubusercontent.com/u/190142643?v=4" width="100px;" alt="Usman Azhar"/><br/>
         <b>Usman Azhar</b>
       </a><br/>
-      <sub>Backend Development Lead</sub><br/>
       <a href="https://github.com/Usman-Azhar">@Usman-Azhar</a>
     </td>
     <td align="center">
@@ -321,7 +320,6 @@ We're three Cyber Security students from GIKI who built this together:
         <img src="https://avatars.githubusercontent.com/u/210160015?v=4" width="100px;" alt="Fatima Ali"/><br/>
         <b>Fatima Ali</b>
       </a><br/>
-      <sub>Database Design Lead</sub><br/>
       <a href="https://github.com/fatimaalli">@FatimaAlli</a>
     </td>
     <td align="center">
@@ -329,7 +327,6 @@ We're three Cyber Security students from GIKI who built this together:
         <img src="https://avatars.githubusercontent.com/u/205511354?v=4" width="100px;" alt="Muhammad Abdullah"/><br/>
         <b>Muhammad Abdullah</b>
       </a><br/>
-      <sub>Security & Testing Lead</sub><br/>
       <a href="https://github.com/GhostByte101">@GhostByte101</a>
     </td>
   </tr>
