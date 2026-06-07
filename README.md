@@ -359,7 +359,3 @@ We're three CS students from GIKIST who built this together:
 This project is shared for educational purposes. Feel free to learn from it, improve it, and adapt it for your own projects.
 
 ---
-
-**🛡️ ThreatLens – Built by Students, Inspired by Real Security Challenges**
-
-*Made with ❤️ at GIKIST*
