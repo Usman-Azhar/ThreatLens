@@ -1,7 +1,4 @@
-
 -- views
-
-
 
 
 -- View 1: vw_alert_summary
@@ -65,13 +62,13 @@ SELECT
     u.username,
     u.org_id,
     e.ip_address::text,
-    COUNT(*)           AS failed_attempts,
-    MIN(e.times_tamp)  AS first_attempt,
-    MAX(e.times_tamp)  AS last_attempt
+    COUNT(*)          AS failed_attempts,
+    MIN(e.times_tamp) AS first_attempt,
+    MAX(e.times_tamp) AS last_attempt
 FROM events e
 JOIN users u ON e.user_id = u.user_id
 WHERE e.event_type = 'login_failed'
-GROUP BY u.username, e.ip_address, DATE_TRUNC('hour', e.times_tamp)
+GROUP BY u.username, u.org_id, e.ip_address, DATE_TRUNC('hour', e.times_tamp)
 HAVING COUNT(*) >= 5
    AND MAX(e.times_tamp) - MIN(e.times_tamp) <= INTERVAL '15 minutes';
 

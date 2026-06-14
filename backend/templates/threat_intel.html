@@ -175,7 +175,7 @@
 
   <!-- Add form -->
   <div class="add-form">
-    <div class="add-form-title">// Add New Entry</div>
+    <div class="add-form-title">Add New Entry</div>
     <form action="/threat-intel/add" method="POST">
       <div class="add-form-row">
         <select name="threat_type" class="form-select" required>
@@ -197,7 +197,7 @@
         <tr>
           <th>#</th>
           <th>Type</th>
-          <th>Value (IP / Host)</th>
+          <th>IP Address</th>
           <th>Last Updated</th>
           <th>Action</th>
         </tr>
@@ -225,7 +225,7 @@
           </td>
         </tr>
         {% else %}
-        <tr><td colspan="5"><div class="empty">// No threat intelligence entries</div></td></tr>
+        <tr><td colspan="5"><div class="empty">No threat intelligence entries</div></td></tr>
         {% endfor %}
       </tbody>
     </table>
